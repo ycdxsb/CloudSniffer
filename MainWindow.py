@@ -12,10 +12,19 @@ class MainWindow(QMainWindow):
         self.setUpUI()
 
     def setUpUI(self):
-        self.resize(850,800)
+        self.title = "Sniffer"
+        self.setWindowTitle(self.title)
+        self.setFixedSize(1000,800)
+
+        self.widget = QWidget(self)
+        self.setCentralWidget(self.widget)
+
+        
+        
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    app.setWindowIcon(QIcon("./images/swords.ico"))
     mainWindow = MainWindow()
     mainWindow.show()
     sys.exit(app.exec_())
