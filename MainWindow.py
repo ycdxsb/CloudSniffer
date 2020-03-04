@@ -80,16 +80,18 @@ class MainWindow(QMainWindow):
         self.HwidgetTop.setFixedHeight(40)
 
         # set HLayoutMiddle to HwidgetMiddle
+        '''
         self.filterLabel = QLabel()
         self.filterLabel.setText("过滤功能: ")
         self.filterLabel.setFixedHeight(32)
-        self.filterLabel.setFixedWidth(100)
+        self.filterLabel.setFixedWidth(60)
         self.filterLabel.setAlignment(Qt.AlignCenter)
-
+        ''' 
+        
         self.protolLabel = QLabel()
         self.protolLabel.setText("通讯协议: ")
         self.protolLabel.setFixedHeight(32)
-        self.protolLabel.setFixedWidth(100)
+        self.protolLabel.setFixedWidth(60)
         self.protolLabel.setAlignment(Qt.AlignCenter)
 
         self.protolLineEdit = QLineEdit()
@@ -99,7 +101,7 @@ class MainWindow(QMainWindow):
         self.srcIpLabel = QLabel()
         self.srcIpLabel.setText("源地址: ")
         self.srcIpLabel.setFixedHeight(32)
-        self.srcIpLabel.setFixedWidth(80)
+        self.srcIpLabel.setFixedWidth(60)
         self.srcIpLabel.setAlignment(Qt.AlignCenter)
 
         self.srcIpLineEdit = QLineEdit()
@@ -109,7 +111,7 @@ class MainWindow(QMainWindow):
         self.srcPortLabel = QLabel()
         self.srcPortLabel.setText("源端口: ")
         self.srcPortLabel.setFixedHeight(32)
-        self.srcPortLabel.setFixedWidth(80)
+        self.srcPortLabel.setFixedWidth(60)
         self.srcPortLabel.setAlignment(Qt.AlignCenter)
 
         self.srcPortLineEdit = QLineEdit()
@@ -119,7 +121,7 @@ class MainWindow(QMainWindow):
         self.desIpLabel = QLabel()
         self.desIpLabel.setText("目的地址: ")
         self.desIpLabel.setFixedHeight(32)
-        self.desIpLabel.setFixedWidth(100)
+        self.desIpLabel.setFixedWidth(60)
         self.desIpLabel.setAlignment(Qt.AlignCenter)
 
         self.desIpLineEdit = QLineEdit()
@@ -129,7 +131,7 @@ class MainWindow(QMainWindow):
         self.desPortLabel = QLabel()
         self.desPortLabel.setText("目的端口: ")
         self.desPortLabel.setFixedHeight(32)
-        self.desPortLabel.setFixedWidth(100)
+        self.desPortLabel.setFixedWidth(60)
         self.desPortLabel.setAlignment(Qt.AlignCenter)
 
         self.desPortLineEdit = QLineEdit()
@@ -141,8 +143,8 @@ class MainWindow(QMainWindow):
         self.filterBtn.setFixedHeight(32)
         self.filterBtn.setFixedWidth(100)
 
-        self.HLayoutMiddle.addWidget(
-            self.filterLabel, 0, Qt.AlignVCenter | Qt.AlignHCenter)
+        #self.HLayoutMiddle.addWidget(
+        #    self.filterLabel, 0, Qt.AlignVCenter | Qt.AlignHCenter)
         self.HLayoutMiddle.addWidget(
             self.protolLabel, 0, Qt.AlignVCenter | Qt.AlignHCenter)
         self.HLayoutMiddle.addWidget(
@@ -165,7 +167,6 @@ class MainWindow(QMainWindow):
             self.desPortLineEdit, 0, Qt.AlignVCenter | Qt.AlignHCenter)
         self.HLayoutMiddle.addWidget(
             self.filterBtn, 0, Qt.AlignVCenter | Qt.AlignHCenter)
-        
         self.HwidgetMiddle.setLayout(self.HLayoutMiddle)
         
         # set HLayoutBottom to HLayoutBottom
