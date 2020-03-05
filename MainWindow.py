@@ -52,6 +52,11 @@ class MainWindow(QMainWindow):
         self.stopBtn.setFixedHeight(32)
         self.stopBtn.setFixedWidth(100)
 
+        self.clearBtn = QPushButton()
+        self.clearBtn.setText("清空数据")
+        self.clearBtn.setFixedHeight(32)
+        self.clearBtn.setFixedWidth(100)
+
         self.saveBtn = QPushButton()
         self.saveBtn.setText("保存数据")
         self.saveBtn.setFixedHeight(32)
@@ -70,6 +75,8 @@ class MainWindow(QMainWindow):
             self.beginBtn, 0, Qt.AlignVCenter | Qt.AlignHCenter)
         self.HLayoutTop.addWidget(
             self.stopBtn, 0, Qt.AlignVCenter | Qt.AlignHCenter)
+        self.HLayoutTop.addWidget(
+            self.clearBtn, 0, Qt.AlignVCenter | Qt.AlignHCenter)
         self.HLayoutTop.addWidget(
             self.saveBtn, 0, Qt.AlignVCenter | Qt.AlignHCenter)
         self.HLayoutTop.addWidget(
