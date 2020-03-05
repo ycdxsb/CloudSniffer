@@ -6,10 +6,14 @@ from pcap import *
 
 import sys
 import os
-
+import threading
 import logging
-logging.basicConfig(level=logging.DEBUG,format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+
+
+logging.basicConfig(level=logging.DEBUG,
+                    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
+
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -91,15 +95,15 @@ class MainWindow(QMainWindow):
         self.HwidgetTop.setFixedHeight(40)
 
         # set HLayoutMiddle to HwidgetMiddle
-        self.protolLabel = QLabel()
-        self.protolLabel.setText("协议类型: ")
-        self.protolLabel.setFixedHeight(32)
-        self.protolLabel.setFixedWidth(60)
-        self.protolLabel.setAlignment(Qt.AlignCenter)
+        self.protocolLabel = QLabel()
+        self.protocolLabel.setText("协议类型: ")
+        self.protocolLabel.setFixedHeight(32)
+        self.protocolLabel.setFixedWidth(60)
+        self.protocolLabel.setAlignment(Qt.AlignCenter)
 
-        self.protolLineEdit = QLineEdit()
-        self.protolLineEdit.setFixedHeight(32)
-        self.protolLineEdit.setFixedWidth(80)
+        self.protocolLineEdit = QLineEdit()
+        self.protocolLineEdit.setFixedHeight(32)
+        self.protocolLineEdit.setFixedWidth(80)
 
         self.srcIpLabel = QLabel()
         self.srcIpLabel.setText("源地址: ")
@@ -147,9 +151,9 @@ class MainWindow(QMainWindow):
         self.filterBtn.setFixedWidth(100)
 
         self.HLayoutMiddle.addWidget(
-            self.protolLabel, 0, Qt.AlignVCenter | Qt.AlignHCenter)
+            self.protocolLabel, 0, Qt.AlignVCenter | Qt.AlignHCenter)
         self.HLayoutMiddle.addWidget(
-            self.protolLineEdit, 0, Qt.AlignVCenter | Qt.AlignHCenter)
+            self.protocolLineEdit, 0, Qt.AlignVCenter | Qt.AlignHCenter)
         self.HLayoutMiddle.addWidget(
             self.srcIpLabel, 0, Qt.AlignVCenter | Qt.AlignHCenter)
         self.HLayoutMiddle.addWidget(
@@ -191,23 +195,25 @@ class MainWindow(QMainWindow):
         self.widget.setLayout(self.VLayout)
         return
 
-
     def setUpSnifferInfos(self):
-        if(len(findalldevs())!=0):
+        if(len(findalldevs()) != 0):
             self.eth = findalldevs()[0]
+            logger.info("Set interface %s" % self.eth)
         else:
             self.eth = None
             logger.warning("There is no interface on this os")
-        self.protol = None
+        self.protocol = None
         self.srcIp = None
         self.srcPort = None
         self.desIp = None
         self.desPort = None
         self.packageInfos = None
+        self.stop_flag = None
 
     def setSignalConnect(self):
         self.quitBtn.clicked.connect(self.quitBtnHandle)
         self.chooseNICComboBox.activated.connect(self.chooseNICComboBoxHandle)
+        self.beginBtn.clicked.connect(self.beginBtnHandle)
         self.filterBtn.clicked.connect(self.filterBtnHandle)
 
     def quitBtnHandle(self):
@@ -217,15 +223,25 @@ class MainWindow(QMainWindow):
 
     def chooseNICComboBoxHandle(self):
         self.eth = self.chooseNICComboBox.currentText()
-        logger.info("Change interface to %s"%self.eth)
+        logger.info("Set interface %s" % self.eth)
+    
+    def beginBtnHandle(self):
+        self.stop_flag = False;
+
 
     def filterBtnHandle(self):
-        self.protol = self.protolLineEdit.text()
+        self.protocol = self.protocolLineEdit.text()
+        logger.info("Set protocol: %s" % self.protocol)
         self.srcIp = self.srcIpLineEdit.text()
+        logger.info("Set srcIp: %s" % self.srcIp)
         self.srcPort = self.srcPortLineEdit.text()
+        logger.info("Set srcPort: %s" % self.srcPort)
         self.desIp = self.desIpLineEdit.text()
+        logger.info("Set desIp: %s" % self.desIp)
         self.desPort = self.desPortLineEdit.text()
-        
+        logger.info("Set desPort: %s" % self.desPort)
+
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon("./images/swords.ico"))
