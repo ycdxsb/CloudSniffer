@@ -63,10 +63,10 @@ class MainWindow(QMainWindow):
         self.saveBtn.setFixedHeight(32)
         self.saveBtn.setFixedWidth(100)
 
-        self.existBtn = QPushButton()
-        self.existBtn.setText("退出程序")
-        self.existBtn.setFixedHeight(32)
-        self.existBtn.setFixedWidth(100)
+        self.quitBtn = QPushButton()
+        self.quitBtn.setText("退出程序")
+        self.quitBtn.setFixedHeight(32)
+        self.quitBtn.setFixedWidth(100)
 
         self.HLayoutTop.addWidget(
             self.chooseNICLabel, 0, Qt.AlignVCenter | Qt.AlignHCenter)
@@ -81,7 +81,7 @@ class MainWindow(QMainWindow):
         self.HLayoutTop.addWidget(
             self.saveBtn, 0, Qt.AlignVCenter | Qt.AlignHCenter)
         self.HLayoutTop.addWidget(
-            self.existBtn, 0, Qt.AlignVCenter | Qt.AlignHCenter)
+            self.quitBtn, 0, Qt.AlignVCenter | Qt.AlignHCenter)
 
         self.HwidgetTop.setLayout(self.HLayoutTop)
         self.HwidgetTop.setFixedWidth(800)
@@ -199,9 +199,9 @@ class MainWindow(QMainWindow):
         self.packageInfos = None
 
     def setSignalConnect(self):
-        self.existBtn.clicked.connect(self.existBtnHandle)
+        self.quitBtn.clicked.connect(self.quitBtnHandle)
 
-    def existBtnHandle(self):
+    def quitBtnHandle(self):
         qApp = QApplication.instance()
         qApp.quit()
 
