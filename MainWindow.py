@@ -13,6 +13,7 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__(parent)
         self.setUpUI()
         self.setUpSnifferInfos()
+        self.setSignalConnect()
 
     def setUpUI(self):
         self.title = "Sniffer"
@@ -87,14 +88,6 @@ class MainWindow(QMainWindow):
         self.HwidgetTop.setFixedHeight(40)
 
         # set HLayoutMiddle to HwidgetMiddle
-        '''
-        self.filterLabel = QLabel()
-        self.filterLabel.setText("过滤功能: ")
-        self.filterLabel.setFixedHeight(32)
-        self.filterLabel.setFixedWidth(60)
-        self.filterLabel.setAlignment(Qt.AlignCenter)
-        '''
-
         self.protolLabel = QLabel()
         self.protolLabel.setText("协议类型: ")
         self.protolLabel.setFixedHeight(32)
@@ -150,8 +143,6 @@ class MainWindow(QMainWindow):
         self.filterBtn.setFixedHeight(32)
         self.filterBtn.setFixedWidth(100)
 
-        # self.HLayoutMiddle.addWidget(
-        #    self.filterLabel, 0, Qt.AlignVCenter | Qt.AlignHCenter)
         self.HLayoutMiddle.addWidget(
             self.protolLabel, 0, Qt.AlignVCenter | Qt.AlignHCenter)
         self.HLayoutMiddle.addWidget(
@@ -197,6 +188,7 @@ class MainWindow(QMainWindow):
         self.widget.setLayout(self.VLayout)
         return
 
+
     def setUpSnifferInfos(self):
         self.eth = None
         self.protol = None
@@ -206,6 +198,12 @@ class MainWindow(QMainWindow):
         self.desPort = None
         self.packageInfos = None
 
+    def setSignalConnect(self):
+        self.existBtn.clicked.connect(self.existBtnHandle)
+
+    def existBtnHandle(self):
+        qApp = QApplication.instance()
+        qApp.quit()
 
 
 
