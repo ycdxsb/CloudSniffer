@@ -12,6 +12,7 @@ class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         self.setUpUI()
+        self.setUpSnifferInfos()
 
     def setUpUI(self):
         self.title = "Sniffer"
@@ -30,7 +31,6 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.widget)
 
         # set HLayoutTop to HwidgetTop
-
         self.chooseNICLabel = QLabel("选择网卡:")
         self.chooseNICLabel.setFixedHeight(32)
         self.chooseNICLabel.setFixedWidth(100)
@@ -86,10 +86,10 @@ class MainWindow(QMainWindow):
         self.filterLabel.setFixedHeight(32)
         self.filterLabel.setFixedWidth(60)
         self.filterLabel.setAlignment(Qt.AlignCenter)
-        ''' 
-        
+        '''
+
         self.protolLabel = QLabel()
-        self.protolLabel.setText("通讯协议: ")
+        self.protolLabel.setText("协议类型: ")
         self.protolLabel.setFixedHeight(32)
         self.protolLabel.setFixedWidth(60)
         self.protolLabel.setAlignment(Qt.AlignCenter)
@@ -143,7 +143,7 @@ class MainWindow(QMainWindow):
         self.filterBtn.setFixedHeight(32)
         self.filterBtn.setFixedWidth(100)
 
-        #self.HLayoutMiddle.addWidget(
+        # self.HLayoutMiddle.addWidget(
         #    self.filterLabel, 0, Qt.AlignVCenter | Qt.AlignHCenter)
         self.HLayoutMiddle.addWidget(
             self.protolLabel, 0, Qt.AlignVCenter | Qt.AlignHCenter)
@@ -168,14 +168,38 @@ class MainWindow(QMainWindow):
         self.HLayoutMiddle.addWidget(
             self.filterBtn, 0, Qt.AlignVCenter | Qt.AlignHCenter)
         self.HwidgetMiddle.setLayout(self.HLayoutMiddle)
-        
+
+        # set package info
+        # No Time Source Destination Protocol Length Info
+        self.packageInfosTable = QTableWidget()
+        self.packageInfosTable.setColumnCount(7)
+        # self.packageInfosTable.setRowCount(50)
+        self.packageInfosTable.setHorizontalHeaderLabels(
+            ["序号", "时间", "源地址", "目的地址", "协议类型", "长度", "信息"])
+        self.packageInfosTable.setEditTriggers(
+            QAbstractItemView.NoEditTriggers)
+        self.packageInfosTable.setSelectionBehavior(
+            QAbstractItemView.SelectRows)
+
         # set HLayoutBottom to HLayoutBottom
 
         # ------
         self.VLayout.addWidget(self.HwidgetTop)
         self.VLayout.addWidget(self.HwidgetMiddle)
+        self.VLayout.addWidget(self.packageInfosTable)
         self.widget.setLayout(self.VLayout)
         return
+
+    def setUpSnifferInfos(self):
+        self.eth = None
+        self.protol = None
+        self.srcIp = None
+        self.srcPort = None
+        self.desIp = None
+        self.desPort = None
+        self.packageInfos = None
+
+
 
 
 if __name__ == "__main__":
