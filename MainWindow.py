@@ -1,12 +1,15 @@
-import sys
-import os
-
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 import qdarkstyle
 from pcap import *
 
+import sys
+import os
+
+import logging
+logging.basicConfig(level=logging.DEBUG,format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logger = logging.getLogger(__name__)
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -190,7 +193,11 @@ class MainWindow(QMainWindow):
 
 
     def setUpSnifferInfos(self):
-        self.eth = None
+        if(len(findalldevs())!=0):
+            self.eth = findalldevs()[0]
+        else:
+            self.eth = None
+            logger.warning("There is no interface on this os")
         self.protol = None
         self.srcIp = None
         self.srcPort = None
@@ -200,17 +207,30 @@ class MainWindow(QMainWindow):
 
     def setSignalConnect(self):
         self.quitBtn.clicked.connect(self.quitBtnHandle)
+        self.chooseNICComboBox.activated.connect(self.chooseNICComboBoxHandle)
+        self.filterBtn.clicked.connect(self.filterBtnHandle)
 
     def quitBtnHandle(self):
         qApp = QApplication.instance()
+        logger.info("Sniffer is shuting down")
         qApp.quit()
 
+    def chooseNICComboBoxHandle(self):
+        self.eth = self.chooseNICComboBox.currentText()
+        logger.info("Change interface to %s"%self.eth)
 
-
+    def filterBtnHandle(self):
+        self.protol = self.protolLineEdit.text()
+        self.srcIp = self.srcIpLineEdit.text()
+        self.srcPort = self.srcPortLineEdit.text()
+        self.desIp = self.desIpLineEdit.text()
+        self.desPort = self.desPortLineEdit.text()
+        
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon("./images/swords.ico"))
     # app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
     mainWindow = MainWindow()
+    logger.info("Sniffer is starting")
     mainWindow.show()
     sys.exit(app.exec_())
