@@ -6,6 +6,7 @@ from pcap import *
 
 import sys
 import os
+import time
 import threading
 import logging
 
@@ -18,6 +19,7 @@ logger = logging.getLogger(__name__)
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
+        logger.info("Sniffer is starting")
         self.setUpUI()
         self.setUpSnifferInfos()
         self.setSignalConnect()
@@ -208,28 +210,47 @@ class MainWindow(QMainWindow):
         self.desIp = None
         self.desPort = None
         self.packageInfos = None
-        self.stop_flag = None
+        self.stop_flag = False  # False: not stop; True: stop
+        self.setfilter_flag = False  # False: have't set filter; True: have be setted
 
     def setSignalConnect(self):
         self.quitBtn.clicked.connect(self.quitBtnHandle)
         self.chooseNICComboBox.activated.connect(self.chooseNICComboBoxHandle)
         self.beginBtn.clicked.connect(self.beginBtnHandle)
+        self.stopBtn.clicked.connect(self.stopBtnHandle)
         self.filterBtn.clicked.connect(self.filterBtnHandle)
 
     def quitBtnHandle(self):
         qApp = QApplication.instance()
-        logger.info("Sniffer is shuting down")
+        logger.info("Sniffer is shutting down")
         qApp.quit()
 
     def chooseNICComboBoxHandle(self):
         self.eth = self.chooseNICComboBox.currentText()
         logger.info("Set interface %s" % self.eth)
-    
-    def beginBtnHandle(self):
-        self.stop_flag = False;
 
+    def beginBtnHandle(self):
+        logger.info("Begin sniff on interface %s" % self.eth)
+        self.stop_flag = False
+        self.packageInfos = []
+        th = threading.Thread(target=self.capture_packages)
+        th.start()
+
+    def capture_packages(self):
+        i = 0
+        logger.info("Capture begin")
+        while(not self.stop_flag):
+            time.sleep(1)
+            i += 1
+            logger.info("Capture %i package" % i)
+        logger.info("Capture finish")
+
+    def stopBtnHandle(self):
+        self.stop_flag = True
+        logger.info("Stop sniff on interface %s" % self.eth)
 
     def filterBtnHandle(self):
+        self.setfilter_flag = True
         self.protocol = self.protocolLineEdit.text()
         logger.info("Set protocol: %s" % self.protocol)
         self.srcIp = self.srcIpLineEdit.text()
@@ -247,6 +268,5 @@ if __name__ == "__main__":
     app.setWindowIcon(QIcon("./images/swords.ico"))
     # app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
     mainWindow = MainWindow()
-    logger.info("Sniffer is starting")
     mainWindow.show()
     sys.exit(app.exec_())
