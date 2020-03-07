@@ -44,7 +44,7 @@ class MainWindow(QMainWindow):
         # set HLayoutTop to HwidgetTop
         self.chooseNICLabel = QLabel("选择网卡:")
         self.chooseNICLabel.setFixedHeight(32)
-        self.chooseNICLabel.setFixedWidth(100)
+        self.chooseNICLabel.setFixedWidth(80)
         self.chooseNICLabel.setAlignment(Qt.AlignCenter)
 
         self.chooseNICComboBox = QComboBox()
@@ -73,6 +73,11 @@ class MainWindow(QMainWindow):
         self.saveBtn.setFixedHeight(32)
         self.saveBtn.setFixedWidth(100)
 
+        self.loadBtn = QPushButton()
+        self.loadBtn.setText("读取数据")
+        self.loadBtn.setFixedHeight(32)
+        self.loadBtn.setFixedWidth(100)
+
         self.quitBtn = QPushButton()
         self.quitBtn.setText("退出程序")
         self.quitBtn.setFixedHeight(32)
@@ -91,10 +96,12 @@ class MainWindow(QMainWindow):
         self.HLayoutTop.addWidget(
             self.saveBtn, 0, Qt.AlignVCenter | Qt.AlignHCenter)
         self.HLayoutTop.addWidget(
+            self.loadBtn, 0, Qt.AlignVCenter | Qt.AlignHCenter)
+        self.HLayoutTop.addWidget(
             self.quitBtn, 0, Qt.AlignVCenter | Qt.AlignHCenter)
 
         self.HwidgetTop.setLayout(self.HLayoutTop)
-        self.HwidgetTop.setFixedWidth(800)
+        self.HwidgetTop.setFixedWidth(880)
         self.HwidgetTop.setFixedHeight(40)
 
         # set HLayoutMiddle to HwidgetMiddle
@@ -230,7 +237,15 @@ class MainWindow(QMainWindow):
         self.stopBtn.clicked.connect(self.stopBtnHandle)
         self.clearBtn.clicked.connect(self.clearBtnHandle)
         self.saveBtn.clicked.connect(self.saveBtnHandle)
+        self.loadBtn.clicked.connect(self.loadBtnHandle)
         self.filterBtn.clicked.connect(self.filterBtnHandle)
+
+    def loadBtnHandle(self):
+        file, ok = QFileDialog.getOpenFileName(self)
+        self.clearBtnHandle()
+        pkts = rdpcap(file)
+        for i in range(len(pkts)):
+            self.deal_package(pkts[i])
 
     def saveBtnHandle(self):
         file, ok = QFileDialog.getSaveFileName(self)
