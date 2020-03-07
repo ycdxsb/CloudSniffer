@@ -203,13 +203,19 @@ class MainWindow(QMainWindow):
         self.packageInfosTable.setColumnWidth(4, 60)
         self.packageInfosTable.setColumnWidth(5, 80)
         self.packageInfosTable.setColumnWidth(6, 800)
+        self.packageInfosTable.setFixedHeight(400)
 
+        self.hexdumpWindow = QTextEdit()
+        self.hexdumpWindow.setFixedHeight(300)
+        self.hexdumpWindow.setReadOnly(True)
+        self.hexdumpWindow.setFont(QFont("Source Code Pro",14))
         # set HLayoutBottom to HLayoutBottom
 
         # ------
         self.VLayout.addWidget(self.HwidgetTop)
         self.VLayout.addWidget(self.HwidgetMiddle)
         self.VLayout.addWidget(self.packageInfosTable)
+        self.VLayout.addWidget(self.hexdumpWindow)
         self.widget.setLayout(self.VLayout)
         return
 
@@ -239,20 +245,33 @@ class MainWindow(QMainWindow):
         self.saveBtn.clicked.connect(self.saveBtnHandle)
         self.loadBtn.clicked.connect(self.loadBtnHandle)
         self.filterBtn.clicked.connect(self.filterBtnHandle)
+        self.packageInfosTable.clicked.connect(self.packageInfosTableHandle)
+
+    def packageInfosTableHandle(self, index):
+        row = index.row()
+        self.hexdumpWindow.setText(
+            hexdump(self.packageInfos[row]['pkt'], dump=True))
 
     def loadBtnHandle(self):
+        logger.info("Load package begin")
         file, ok = QFileDialog.getOpenFileName(self)
         self.clearBtnHandle()
         pkts = rdpcap(file)
         for i in range(len(pkts)):
             self.deal_package(pkts[i])
+        logger.info("Load package done")
 
     def saveBtnHandle(self):
+        logger.info("Save package begin")
         file, ok = QFileDialog.getSaveFileName(self)
+        if(file == ''):
+            logger.warning("Save file name is None")
+            return
         pkts = []
         for i in range(len(self.packageInfos)):
             pkts.append(self.packageInfos[i]['pkt'])
         wrpcap(file, pkts)
+        logger.info("Save package done")
 
     def clearBtnHandle(self):
         logger.info("Clean packages begin")
@@ -260,6 +279,7 @@ class MainWindow(QMainWindow):
         count = self.packageInfosTable.rowCount()
         for i in range(count-1, -1, -1):
             self.packageInfosTable.removeRow(i)
+        self.hexdumpWindow.clear()
         logger.info("Clean packages done")
 
     def quitBtnHandle(self):
@@ -297,20 +317,35 @@ class MainWindow(QMainWindow):
         count = self.packageInfosTable.rowCount()
         self.packageInfosTable.insertRow(count)
         # ["序号", "时间", "源地址", "目的地址", "协议类型", "长度", "信息"]
+        font = QFont("Source Code Pro",14)
+        tmp = QTableWidgetItem(str(count+1))
+        tmp.setFont(font)
         self.packageInfosTable.setItem(
-            count, 0, QTableWidgetItem(str(count+1)))
+            count, 0, tmp)
+        tmp = QTableWidgetItem(info['time'])
+        tmp.setFont(font)
         self.packageInfosTable.setItem(
-            count, 1, QTableWidgetItem(info['time']))
+            count, 1, tmp)
+        tmp = QTableWidgetItem(info['Source'])
+        tmp.setFont(font)
         self.packageInfosTable.setItem(
-            count, 2, QTableWidgetItem(info['Source']))
+            count, 2, tmp)
+        tmp = QTableWidgetItem(info['Destination'])
+        tmp.setFont(font)
         self.packageInfosTable.setItem(
-            count, 3, QTableWidgetItem(info['Destination']))
+            count, 3, tmp)
+        tmp = QTableWidgetItem(info['Procotol'])
+        tmp.setFont(font)
         self.packageInfosTable.setItem(
-            count, 4, QTableWidgetItem(info['Procotol']))
+            count, 4, tmp)
+        tmp = QTableWidgetItem(str(info['len'])+' bytes')
+        tmp.setFont(font)
         self.packageInfosTable.setItem(
-            count, 5, QTableWidgetItem(str(info['len'])+' Bytes'))
+            count, 5, tmp)
+        tmp = QTableWidgetItem(info['info'])
+        tmp.setFont(font)
         self.packageInfosTable.setItem(
-            count, 6, QTableWidgetItem(info['info']))
+            count, 6, tmp)
 
     def stopBtnHandle(self):
         self.stop_flag = True
