@@ -10,7 +10,7 @@ import time
 import datetime
 import threading
 import logging
-
+from pcap_decode import PcapDecode
 
 logging.basicConfig(level=logging.DEBUG,
                     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -180,6 +180,7 @@ class MainWindow(QMainWindow):
         # set package info
         # No Time Source Destination Protocol Length Info
         self.packageInfosTable = QTableWidget()
+        self.packageInfosTable.verticalHeader().setVisible(False)
         self.packageInfosTable.setColumnCount(7)
         # self.packageInfosTable.setRowCount(50)
         self.packageInfosTable.setHorizontalHeaderLabels(
@@ -188,6 +189,13 @@ class MainWindow(QMainWindow):
             QAbstractItemView.NoEditTriggers)
         self.packageInfosTable.setSelectionBehavior(
             QAbstractItemView.SelectRows)
+        self.packageInfosTable.setColumnWidth(0,40)
+        self.packageInfosTable.setColumnWidth(1,140)
+        self.packageInfosTable.setColumnWidth(2,180)
+        self.packageInfosTable.setColumnWidth(3,180)
+        self.packageInfosTable.setColumnWidth(4,60)
+        self.packageInfosTable.setColumnWidth(5,80)
+        self.packageInfosTable.setColumnWidth(6,800)
 
         # set HLayoutBottom to HLayoutBottom
 
@@ -213,6 +221,7 @@ class MainWindow(QMainWindow):
         self.packageInfos = None
         self.stop_flag = False  # False: not stop; True: stop
         self.setfilter_flag = False  # False: have't set filter; True: have be setted
+        self.pcapdecoder = PcapDecode()
 
     def setSignalConnect(self):
         self.quitBtn.clicked.connect(self.quitBtnHandle)
@@ -236,60 +245,39 @@ class MainWindow(QMainWindow):
         self.packageInfos = []
         th = threading.Thread(target=self.capture_packages)
         th.start()
-    
+
     def capture_packages(self):
         logger.info("Capture begin")
         while(not self.stop_flag):
             if(self.setfilter_flag):
                 pass
             else:
-                # pass
-        logger.info("Capture finish")
-    '''
-    def capture_packages(self):
-        logger.info("Capture begin")
-        while(not self.stop_flag):
-            if(self.setfilter_flag):
-                pass
-            else:
-                pc = pcap(self.eth, immediate=True)
-                pc.loop(5, self.deal_package)
+                sniff(filter="", prn=self.deal_package, iface=self.eth, count=5)
         logger.info("Capture finish")
 
-    def deal_package(self, timestamp, buf):
-        packageInfo = {}
-        d = datetime.datetime.fromtimestamp(timestamp)
-        # t = d.strftime("%Y-%m-%d %H:%M:%S")
-        packageInfo['time'] = d.strftime("%H:%M:%S.%f")
-        packageInfo['timestamp'] = timestamp
-        packageInfo['length'] = len(buf)
-        packageInfo['buf'] = buf
-        packageInfo['hexdump_buf'] = dpkt.hexdump(buf)
-        eth = dpkt.ethernet.Ethernet(buf)
+    def deal_package(self, pkt):
+        info = self.pcapdecoder.ether_decode(pkt)
+        self.packageInfos.append({'pkt': pkt, 'info': info})
+        self.showOnTable(info)
 
-        if(eth.data.__class__.__name__ == "ARP"):
-            packageInfo['protocol'] = "ARP"
-            arpInfo = {}
-            arp = eth.data
-            arpInfo['hrd_type'] = arp.hrd  # 硬件类型
-            arpInfo['pro_type'] = arp.pro  # 协议类型
-            arpInfo['mac_addr_len'] = arp.hln  # MAC地址长度
-            arpInfo['pro_addr_len'] = arp.pln  # 协议地址长度
-            arpInfo['op'] = arp.op  # 操作码
-            arpInfo['sha'] = mac_addr(arp.sha)  # 发送方MAC地址
-            arpInfo['spa'] = inet_to_str(arp.spa)  # 发送方IP地址
-            arpInfo['tha'] = mac_addr(arp.tha)  # 接收方MAC地址
-            arpInfo['tpa'] = inet_to_str(arp.tpa)  # 接收方IP地址
-            packageInfo['info'] = arpInfo
-            print(arpInfo)
-        elif(eth.data.__class__.__name__ == "IP"):
-            packageInfo['protocol'] = "IP"
-            ipInfo = {}
-            ip = eth.data
-            pass
-        else:
-            pass
-    '''
+    def showOnTable(self, info):
+        count = self.packageInfosTable.rowCount()
+        self.packageInfosTable.insertRow(count)
+        # ["序号", "时间", "源地址", "目的地址", "协议类型", "长度", "信息"]
+        self.packageInfosTable.setItem(
+            count, 0, QTableWidgetItem(str(count+1)))
+        self.packageInfosTable.setItem(
+            count, 1, QTableWidgetItem(info['time']))
+        self.packageInfosTable.setItem(
+            count, 2, QTableWidgetItem(info['Source']))
+        self.packageInfosTable.setItem(
+            count, 3, QTableWidgetItem(info['Destination']))
+        self.packageInfosTable.setItem(
+            count, 4, QTableWidgetItem(info['Procotol']))
+        self.packageInfosTable.setItem(
+            count, 5, QTableWidgetItem(str(info['len'])+' Bytes'))
+        self.packageInfosTable.setItem(
+            count, 6, QTableWidgetItem(info['info']))
 
     def stopBtnHandle(self):
         self.stop_flag = True
