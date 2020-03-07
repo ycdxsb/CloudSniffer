@@ -189,13 +189,13 @@ class MainWindow(QMainWindow):
             QAbstractItemView.NoEditTriggers)
         self.packageInfosTable.setSelectionBehavior(
             QAbstractItemView.SelectRows)
-        self.packageInfosTable.setColumnWidth(0,40)
-        self.packageInfosTable.setColumnWidth(1,140)
-        self.packageInfosTable.setColumnWidth(2,180)
-        self.packageInfosTable.setColumnWidth(3,180)
-        self.packageInfosTable.setColumnWidth(4,60)
-        self.packageInfosTable.setColumnWidth(5,80)
-        self.packageInfosTable.setColumnWidth(6,800)
+        self.packageInfosTable.setColumnWidth(0, 40)
+        self.packageInfosTable.setColumnWidth(1, 140)
+        self.packageInfosTable.setColumnWidth(2, 180)
+        self.packageInfosTable.setColumnWidth(3, 180)
+        self.packageInfosTable.setColumnWidth(4, 60)
+        self.packageInfosTable.setColumnWidth(5, 80)
+        self.packageInfosTable.setColumnWidth(6, 800)
 
         # set HLayoutBottom to HLayoutBottom
 
@@ -228,9 +228,19 @@ class MainWindow(QMainWindow):
         self.chooseNICComboBox.activated.connect(self.chooseNICComboBoxHandle)
         self.beginBtn.clicked.connect(self.beginBtnHandle)
         self.stopBtn.clicked.connect(self.stopBtnHandle)
+        self.clearBtn.clicked.connect(self.clearBtnHandle)
         self.filterBtn.clicked.connect(self.filterBtnHandle)
 
+    def clearBtnHandle(self):
+        logger.info("Clean packages begin")
+        self.packageInfos = []
+        count = self.packageInfosTable.rowCount()
+        for i in range(count-1, -1, -1):
+            self.packageInfosTable.removeRow(i)
+        logger.info("Clean packages done")
+
     def quitBtnHandle(self):
+        self.stopBtnHandle()
         qApp = QApplication.instance()
         logger.info("Sniffer is shutting down")
         qApp.quit()
