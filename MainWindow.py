@@ -229,7 +229,15 @@ class MainWindow(QMainWindow):
         self.beginBtn.clicked.connect(self.beginBtnHandle)
         self.stopBtn.clicked.connect(self.stopBtnHandle)
         self.clearBtn.clicked.connect(self.clearBtnHandle)
+        self.saveBtn.clicked.connect(self.saveBtnHandle)
         self.filterBtn.clicked.connect(self.filterBtnHandle)
+
+    def saveBtnHandle(self):
+        file, ok = QFileDialog.getSaveFileName(self)
+        pkts = []
+        for i in range(len(self.packageInfos)):
+            pkts.append(self.packageInfos[i]['pkt'])
+        wrpcap(file, pkts)
 
     def clearBtnHandle(self):
         logger.info("Clean packages begin")
