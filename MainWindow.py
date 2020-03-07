@@ -1,12 +1,13 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
-import qdarkstyle
 from pcap import *
-
+from scapy.all import *
+import dpkt
 import sys
 import os
 import time
+import datetime
 import threading
 import logging
 
@@ -235,15 +236,60 @@ class MainWindow(QMainWindow):
         self.packageInfos = []
         th = threading.Thread(target=self.capture_packages)
         th.start()
-
+    
     def capture_packages(self):
-        i = 0
         logger.info("Capture begin")
         while(not self.stop_flag):
-            time.sleep(1)
-            i += 1
-            logger.info("Capture %i package" % i)
+            if(self.setfilter_flag):
+                pass
+            else:
+                # pass
         logger.info("Capture finish")
+    '''
+    def capture_packages(self):
+        logger.info("Capture begin")
+        while(not self.stop_flag):
+            if(self.setfilter_flag):
+                pass
+            else:
+                pc = pcap(self.eth, immediate=True)
+                pc.loop(5, self.deal_package)
+        logger.info("Capture finish")
+
+    def deal_package(self, timestamp, buf):
+        packageInfo = {}
+        d = datetime.datetime.fromtimestamp(timestamp)
+        # t = d.strftime("%Y-%m-%d %H:%M:%S")
+        packageInfo['time'] = d.strftime("%H:%M:%S.%f")
+        packageInfo['timestamp'] = timestamp
+        packageInfo['length'] = len(buf)
+        packageInfo['buf'] = buf
+        packageInfo['hexdump_buf'] = dpkt.hexdump(buf)
+        eth = dpkt.ethernet.Ethernet(buf)
+
+        if(eth.data.__class__.__name__ == "ARP"):
+            packageInfo['protocol'] = "ARP"
+            arpInfo = {}
+            arp = eth.data
+            arpInfo['hrd_type'] = arp.hrd  # 硬件类型
+            arpInfo['pro_type'] = arp.pro  # 协议类型
+            arpInfo['mac_addr_len'] = arp.hln  # MAC地址长度
+            arpInfo['pro_addr_len'] = arp.pln  # 协议地址长度
+            arpInfo['op'] = arp.op  # 操作码
+            arpInfo['sha'] = mac_addr(arp.sha)  # 发送方MAC地址
+            arpInfo['spa'] = inet_to_str(arp.spa)  # 发送方IP地址
+            arpInfo['tha'] = mac_addr(arp.tha)  # 接收方MAC地址
+            arpInfo['tpa'] = inet_to_str(arp.tpa)  # 接收方IP地址
+            packageInfo['info'] = arpInfo
+            print(arpInfo)
+        elif(eth.data.__class__.__name__ == "IP"):
+            packageInfo['protocol'] = "IP"
+            ipInfo = {}
+            ip = eth.data
+            pass
+        else:
+            pass
+    '''
 
     def stopBtnHandle(self):
         self.stop_flag = True
