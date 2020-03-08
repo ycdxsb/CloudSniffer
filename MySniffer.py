@@ -197,12 +197,19 @@ class MainWindow(QMainWindow):
         self.framesCountBtn.setFixedHeight(32)
         self.framesCountBtn.setFixedWidth(100)
 
+        self.bytesCountBtn = QPushButton()
+        self.bytesCountBtn.setText("字节统计")
+        self.bytesCountBtn.setFixedHeight(32)
+        self.bytesCountBtn.setFixedWidth(100)
+
         self.statisitcHLayout = QHBoxLayout()
         self.statisticWidget = QWidget()
         self.statisitcHLayout.addWidget(
             self.statisticLabel, 0, Qt.AlignVCenter | Qt.AlignHCenter)
         self.statisitcHLayout.addWidget(
             self.framesCountBtn, 0, Qt.AlignVCenter | Qt.AlignHCenter)
+        self.statisitcHLayout.addWidget(
+            self.bytesCountBtn, 0, Qt.AlignVCenter | Qt.AlignHCenter)
         self.statisticWidget.setLayout(self.statisitcHLayout)
         self.statisticWidget.setFixedHeight(40)
 
@@ -272,8 +279,29 @@ class MainWindow(QMainWindow):
         self.filterBtn.clicked.connect(self.filterBtnHandle)
 
         self.framesCountBtn.clicked.connect(self.framesCountBtnHandle)
+        self.bytesCountBtn.clicked.connect(self.bytesCountBtnHandle)
 
         self.packageInfosTable.clicked.connect(self.packageInfosTableHandle)
+
+    def bytesCountBtnHandle(self):
+        pkts = []
+        for i in range(len(self.packageInfos)):
+            pkts.append(self.packageInfos[i]['pkt'])
+        datas = proto_flow_bytes(pkts)
+        data = []
+        for k, v in datas.items():
+            data.append([k, v])
+        pie = pie_rosetype(data, "")
+        pie.render("./htmls/render.html")
+        view = QWebEngineView()
+        view.load(QUrl("file:///%s/htmls/render.html" % (os.getcwd())))
+        dialog = QDialog(self)
+        dialog.setFixedHeight(600)
+        dialog.setFixedWidth(800)
+        l = QHBoxLayout()
+        l.addWidget(view)
+        dialog.setLayout(l)
+        dialog.show()
 
     def framesCountBtnHandle(self):
         pkts = []
@@ -283,13 +311,10 @@ class MainWindow(QMainWindow):
         data = []
         for k, v in datas.items():
             data.append([k, v])
-        print(data)
         pie = pie_rosetype(data, "")
         pie.render("./htmls/render.html")
         view = QWebEngineView()
         view.load(QUrl("file:///%s/htmls/render.html" % (os.getcwd())))
-        # view.setFixedHeight(600)
-        # view.setFixedWidth(800)
         dialog = QDialog(self)
         dialog.setFixedHeight(600)
         dialog.setFixedWidth(800)
