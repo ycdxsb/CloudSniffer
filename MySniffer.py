@@ -191,7 +191,7 @@ class MainWindow(QMainWindow):
         self.packageInfosTable.setColumnCount(7)
         # self.packageInfosTable.setRowCount(50)
         self.packageInfosTable.setHorizontalHeaderLabels(
-            ["序号", "时间", "源地址", "目的地址", "协议类型", "长度", "信息"])
+            ["序号", "时间", "源地址", "目的地址", "协议类型", "长度(bytes)", "信息"])
         self.packageInfosTable.setEditTriggers(
             QAbstractItemView.NoEditTriggers)
         self.packageInfosTable.setSelectionBehavior(
@@ -207,6 +207,7 @@ class MainWindow(QMainWindow):
 
         self.hexdumpWindow = QTextEdit()
         self.hexdumpWindow.setFixedHeight(300)
+        self.hexdumpWindow.setStyleSheet("border-top:5px solid #323232")
         self.hexdumpWindow.setReadOnly(True)
         self.hexdumpWindow.setFont(QFont("Source Code Pro",14))
         # set HLayoutBottom to HLayoutBottom
@@ -338,7 +339,7 @@ class MainWindow(QMainWindow):
         tmp.setFont(font)
         self.packageInfosTable.setItem(
             count, 4, tmp)
-        tmp = QTableWidgetItem(str(info['len'])+' bytes')
+        tmp = QTableWidgetItem(str(info['len']))
         tmp.setFont(font)
         self.packageInfosTable.setItem(
             count, 5, tmp)
