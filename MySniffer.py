@@ -3,6 +3,7 @@ from pcap_decode import PcapDecode
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
+from qtpy.QtWebEngineWidgets import *
 from pcap import *
 from scapy.all import *
 import dpkt
@@ -183,11 +184,27 @@ class MainWindow(QMainWindow):
         self.HLayoutMiddle.addWidget(
             self.filterBtn, 0, Qt.AlignVCenter | Qt.AlignHCenter)
         self.HwidgetMiddle.setLayout(self.HLayoutMiddle)
+        self.HwidgetMiddle.setFixedHeight(40)
 
         # statistic
+        self.statisticLabel = QLabel()
+        self.statisticLabel.setFixedHeight(32)
+        self.statisticLabel.setFixedWidth(100)
+        self.statisticLabel.setText("统计功能 :")
+
+        self.framesCountBtn = QPushButton()
+        self.framesCountBtn.setText("帧数统计")
+        self.framesCountBtn.setFixedHeight(32)
+        self.framesCountBtn.setFixedWidth(100)
 
         self.statisitcHLayout = QHBoxLayout()
         self.statisticWidget = QWidget()
+        self.statisitcHLayout.addWidget(
+            self.statisticLabel, 0, Qt.AlignVCenter | Qt.AlignHCenter)
+        self.statisitcHLayout.addWidget(
+            self.framesCountBtn, 0, Qt.AlignVCenter | Qt.AlignHCenter)
+        self.statisticWidget.setLayout(self.statisitcHLayout)
+        self.statisticWidget.setFixedHeight(40)
 
         # set package info
         # No Time Source Destination Protocol Length Info
@@ -208,10 +225,10 @@ class MainWindow(QMainWindow):
         self.packageInfosTable.setColumnWidth(4, 60)
         self.packageInfosTable.setColumnWidth(5, 80)
         self.packageInfosTable.setColumnWidth(6, 800)
-        self.packageInfosTable.setFixedHeight(400)
+        self.packageInfosTable.setFixedHeight(350)
 
         self.hexdumpWindow = QTextEdit()
-        self.hexdumpWindow.setFixedHeight(300)
+        self.hexdumpWindow.setFixedHeight(250)
         self.hexdumpWindow.setStyleSheet("border-top:5px solid #323232")
         self.hexdumpWindow.setReadOnly(True)
         self.hexdumpWindow.setFont(QFont("Source Code Pro", 14))
@@ -220,6 +237,7 @@ class MainWindow(QMainWindow):
         # ------
         self.VLayout.addWidget(self.HwidgetTop)
         self.VLayout.addWidget(self.HwidgetMiddle)
+        self.VLayout.addWidget(self.statisticWidget)
         self.VLayout.addWidget(self.packageInfosTable)
         self.VLayout.addWidget(self.hexdumpWindow)
         self.widget.setLayout(self.VLayout)
@@ -237,7 +255,7 @@ class MainWindow(QMainWindow):
         self.srcPort = None
         self.desIp = None
         self.desPort = None
-        self.packageInfos = None
+        self.packageInfos = []
         self.stop_flag = False  # False: not stop; True: stop
         self.setfilter_flag = False  # False: have't set filter; True: have be setted
         self.pcapdecoder = PcapDecode()
@@ -250,8 +268,35 @@ class MainWindow(QMainWindow):
         self.clearBtn.clicked.connect(self.clearBtnHandle)
         self.saveBtn.clicked.connect(self.saveBtnHandle)
         self.loadBtn.clicked.connect(self.loadBtnHandle)
+
         self.filterBtn.clicked.connect(self.filterBtnHandle)
+
+        self.framesCountBtn.clicked.connect(self.framesCountBtnHandle)
+
         self.packageInfosTable.clicked.connect(self.packageInfosTableHandle)
+
+    def framesCountBtnHandle(self):
+        pkts = []
+        for i in range(len(self.packageInfos)):
+            pkts.append(self.packageInfos[i]['pkt'])
+        datas = proto_flow_frames(pkts)
+        data = []
+        for k, v in datas.items():
+            data.append([k, v])
+        print(data)
+        pie = pie_rosetype(data, "")
+        pie.render("./htmls/render.html")
+        view = QWebEngineView()
+        view.load(QUrl("file:///%s/htmls/render.html" % (os.getcwd())))
+        # view.setFixedHeight(600)
+        # view.setFixedWidth(800)
+        dialog = QDialog(self)
+        dialog.setFixedHeight(600)
+        dialog.setFixedWidth(800)
+        l = QHBoxLayout()
+        l.addWidget(view)
+        dialog.setLayout(l)
+        dialog.show()
 
     def packageInfosTableHandle(self, index):
         row = index.row()
@@ -356,11 +401,6 @@ class MainWindow(QMainWindow):
     def stopBtnHandle(self):
         self.stop_flag = True
         logger.info("Stop sniff on interface %s" % self.eth)
-        pkts = []
-        for i in range(len(self.packageInfos)):
-            pkts.append(self.packageInfos[i]['pkt'])
-        print(proto_flow_bytes(pkts))
-        print(proto_flow_frames(pkts))
 
     def filterBtnHandle(self):
         self.setfilter_flag = True

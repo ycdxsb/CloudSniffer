@@ -1,5 +1,22 @@
 from scapy.all import *
 import collections
+from pyecharts import options as opts
+from pyecharts.charts import Pie
+
+def pie_rosetype(data,graphname) -> Pie:
+    pie = (
+        Pie()
+        .add(
+            "",
+            data,
+            radius=["20%", "60%"],
+            center=["50%", "50%"],
+            rosetype="radius",
+            label_opts=opts.LabelOpts(is_show=False),
+        )
+        .set_global_opts(title_opts=opts.TitleOpts(title=graphname))
+    )
+    return pie
 
 def proto_flow_bytes(PCAPS):
     proto_flow_dict = collections.OrderedDict()
