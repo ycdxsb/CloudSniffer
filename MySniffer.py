@@ -1,3 +1,5 @@
+from statistics import *
+from pcap_decode import PcapDecode
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
@@ -10,8 +12,6 @@ import time
 import datetime
 import threading
 import logging
-from pcap_decode import PcapDecode
-
 logging.basicConfig(level=logging.DEBUG,
                     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -184,6 +184,11 @@ class MainWindow(QMainWindow):
             self.filterBtn, 0, Qt.AlignVCenter | Qt.AlignHCenter)
         self.HwidgetMiddle.setLayout(self.HLayoutMiddle)
 
+        # statistic
+
+        self.statisitcHLayout = QHBoxLayout()
+        self.statisticWidget = QWidget()
+
         # set package info
         # No Time Source Destination Protocol Length Info
         self.packageInfosTable = QTableWidget()
@@ -209,7 +214,7 @@ class MainWindow(QMainWindow):
         self.hexdumpWindow.setFixedHeight(300)
         self.hexdumpWindow.setStyleSheet("border-top:5px solid #323232")
         self.hexdumpWindow.setReadOnly(True)
-        self.hexdumpWindow.setFont(QFont("Source Code Pro",14))
+        self.hexdumpWindow.setFont(QFont("Source Code Pro", 14))
         # set HLayoutBottom to HLayoutBottom
 
         # ------
@@ -318,7 +323,7 @@ class MainWindow(QMainWindow):
         count = self.packageInfosTable.rowCount()
         self.packageInfosTable.insertRow(count)
         # ["序号", "时间", "源地址", "目的地址", "协议类型", "长度", "信息"]
-        font = QFont("Source Code Pro",14)
+        font = QFont("Source Code Pro", 14)
         tmp = QTableWidgetItem(str(count+1))
         tmp.setFont(font)
         self.packageInfosTable.setItem(
@@ -351,6 +356,11 @@ class MainWindow(QMainWindow):
     def stopBtnHandle(self):
         self.stop_flag = True
         logger.info("Stop sniff on interface %s" % self.eth)
+        pkts = []
+        for i in range(len(self.packageInfos)):
+            pkts.append(self.packageInfos[i]['pkt'])
+        print(proto_flow_bytes(pkts))
+        print(proto_flow_frames(pkts))
 
     def filterBtnHandle(self):
         self.setfilter_flag = True
