@@ -331,6 +331,9 @@ class MainWindow(QMainWindow):
     def loadBtnHandle(self):
         logger.info("Load package begin")
         file, ok = QFileDialog.getOpenFileName(self)
+        if(file == ''):
+            logger.warning("Lpad file name is None")
+            return
         self.clearBtnHandle()
         pkts = rdpcap(file)
         for i in range(len(pkts)):
