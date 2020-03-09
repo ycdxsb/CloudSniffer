@@ -120,3 +120,70 @@ def proto_flow_frames(PCAPS):
         else:
             proto_flow_dict['Others'] += 1
     return proto_flow_dict
+
+def get_host_ip(PCAPS):
+    ip_list = list()
+    for pcap in PCAPS:
+        if pcap.haslayer(IP):
+            ip_list.append(pcap.getlayer(IP).src)
+            ip_list.append(pcap.getlayer(IP).dst)
+    host_ip = collections.Counter(ip_list).most_common(1)[0][0]
+    return host_ip
+
+def data_in_out_ip(PCAPS, host_ip):
+    in_ip_packet_dict = dict()
+    in_ip_len_dict = dict()
+    out_ip_packet_dict = dict()
+    out_ip_len_dict = dict()
+    for pcap in PCAPS:
+        if pcap.haslayer(IP):
+            dst = pcap.getlayer(IP).dst
+            src = pcap.getlayer(IP).src
+            pcap_len = len(corrupt_bytes(pcap))
+            if dst == host_ip:
+                if src in in_ip_packet_dict:
+                    in_ip_packet_dict[src] += 1
+                    in_ip_len_dict[src] += pcap_len
+                else:
+                    in_ip_packet_dict[src] = 1
+                    in_ip_len_dict[src] = pcap_len
+            elif src == host_ip:
+                if dst in out_ip_packet_dict:
+                    out_ip_packet_dict[dst] += 1
+                    out_ip_len_dict[dst] += pcap_len
+                else:
+                    out_ip_packet_dict[dst] = 1
+                    out_ip_len_dict[dst] = pcap_len
+            else:
+                pass
+
+    in_packet_dict = in_ip_packet_dict
+    in_len_dict = in_ip_len_dict
+    out_packet_dict = out_ip_packet_dict
+    out_len_dict = out_ip_len_dict
+    in_packet_dict = sorted(in_packet_dict.items(), key=lambda d:d[1], reverse=False)
+    in_len_dict = sorted(in_len_dict.items(), key=lambda d:d[1], reverse=False)
+    out_packet_dict = sorted(out_packet_dict.items(), key=lambda d:d[1], reverse=False)
+    out_len_dict = sorted(out_len_dict.items(), key=lambda d:d[1], reverse=False)
+    in_keyp_list = list()
+    in_packet_list = list()
+    for key, value in in_packet_dict:
+        in_keyp_list.append(key)
+        in_packet_list.append(value)
+    in_keyl_list = list()
+    in_len_list = list()
+    for key, value in in_len_dict:
+        in_keyl_list.append(key)
+        in_len_list.append(value)
+    out_keyp_list = list()
+    out_packet_list = list()
+    for key, value in out_packet_dict:
+        out_keyp_list.append(key)
+        out_packet_list.append(value)
+    out_keyl_list = list()
+    out_len_list = list()
+    for key, value in out_len_dict:
+        out_keyl_list.append(key)
+        out_len_list.append(value)
+    in_ip_dict = {'in_keyp': in_keyp_list, 'in_packet': in_packet_list, 'in_keyl': in_keyl_list, 'in_len': in_len_list, 'out_keyp': out_keyp_list, 'out_packet': out_packet_list, 'out_keyl': out_keyl_list, 'out_len': out_len_list}
+    return in_ip_dict

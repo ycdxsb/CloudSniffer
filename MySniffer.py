@@ -287,6 +287,9 @@ class MainWindow(QMainWindow):
         pkts = []
         for i in range(len(self.packageInfos)):
             pkts.append(self.packageInfos[i]['pkt'])
+        host_ip = get_host_ip(pkts)
+        print(host_ip)
+        print(data_in_out_ip(pkts,host_ip))
         datas = proto_flow_bytes(pkts)
         data = []
         for k, v in datas.items():
