@@ -1,6 +1,11 @@
 from scapy.all import *
 import time
 import datetime
+
+def pkt_detail(pkt):
+    data = ""
+    return data
+
 class PcapDecode:
     def __init__(self):
         #ETHER:读取以太网层协议配置文件

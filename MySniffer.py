@@ -234,19 +234,30 @@ class MainWindow(QMainWindow):
         self.packageInfosTable.setColumnWidth(6, 800)
         self.packageInfosTable.setFixedHeight(350)
 
+        self.packageDetailWin = QTextEdit()
+        self.packageDetailWin.setFixedHeight(250)
+        self.packageDetailWin.setFixedWidth(345)
+        self.packageDetailWin.setStyleSheet("border-right:5px solid #323232;border-top:2px solid #323232")
+        self.packageDetailWin.setReadOnly(True)
+        self.packageDetailWin.setFont(QFont("Source Code Pro", 14))
+
         self.hexdumpWindow = QTextEdit()
         self.hexdumpWindow.setFixedHeight(250)
-        self.hexdumpWindow.setStyleSheet("border-top:5px solid #323232")
+        self.hexdumpWindow.setFixedWidth(650)
+        self.hexdumpWindow.setStyleSheet("border-top:2px solid #323232")
         self.hexdumpWindow.setReadOnly(True)
         self.hexdumpWindow.setFont(QFont("Source Code Pro", 14))
         # set HLayoutBottom to HLayoutBottom
+        self.HLayoutBottom.addWidget(self.packageDetailWin)
+        self.HLayoutBottom.addWidget(self.hexdumpWindow)
+        self.HwidgetBottom.setLayout(self.HLayoutBottom)
 
         # ------
         self.VLayout.addWidget(self.HwidgetTop)
         self.VLayout.addWidget(self.HwidgetMiddle)
         self.VLayout.addWidget(self.statisticWidget)
         self.VLayout.addWidget(self.packageInfosTable)
-        self.VLayout.addWidget(self.hexdumpWindow)
+        self.VLayout.addWidget(self.HwidgetBottom)
         self.widget.setLayout(self.VLayout)
         return
 
