@@ -1,4 +1,6 @@
 from scapy.all import *
+#import scapy_http.http as http
+from scapy.layers import http
 import time
 import datetime
 
@@ -54,10 +56,63 @@ def pkt_detail(pkt):
         data += "\tack: %d\n" % tcp.ack
         data += "\theader length: %s bytes (%d)\n" % (
             hex(tcp.dataofs), tcp.dataofs)
-        data += "\tflags : 0x%03x (%s)" % (tcp.flags.value, str(tcp.flags))
+        data += "\tflags : 0x%03x (%s)\n" % (tcp.flags.value, str(tcp.flags))
         data += "\twindow size: %d\n" % tcp.window
         data += "\tchecksum: %s\n" % hex(tcp.chksum)
         data += "\turgent pointer: %d\n" % (tcp.urgptr)
+    if(pkt.haslayer(ICMP)):
+        data += "Internet Control Message Protocol:\n"
+        icmp = pkt.getlayer(ICMP)
+        data += "\ttype: %d\n" % icmp.type
+        data += "\tcode: %d\n" % icmp.type
+        data += "\tchecksum: %s\n" % hex(icmp.chksum)
+    if(pkt.haslayer(DNS)):
+        data += "Domain Name System\n"
+        dns = pkt.getlayer(DNS)
+        if(dns.opcode == 0):
+            data += "\topcode: %s\n" % "answer"
+        else:
+            data += "\topcode: %s\n" % "query"
+        data += "\tqname: %s\n" % dns.qd.qname.decode()
+        for i in range(0, dns.ancount):
+            data += "\t===========================\n"
+            if(type(dns.an[i].rrname) == bytes):
+                data += "\trrname: %s\n" % dns.an[i].rrname.decode()
+            else:
+                data += "\trrname: %s\n" % dns.an[i].rrname
+            if(type(dns.an[i].rdata) == bytes):
+                data += "\trdata: %s\n" % dns.an[i].rdata.decode()
+            else:
+                data += "\trdata: %s\n" % dns.an[i].rdata
+    if(pkt.haslayer(http.HTTP)):
+        data += "HyperText Transfer Protocol:\n"
+        '''
+        if(pkt.haslayer(Raw)):
+            raw = pkt.getlayer(Raw)
+            s = raw.load
+            crlfcrlf = b"\x0d\x0a\x0d\x0a"
+            crlfcrlfIndex = s.find(crlfcrlf)
+            headers = s[:crlfcrlfIndex + len(crlfcrlf)].decode("utf-8")
+            print([headers])
+        '''
+        pkt.show()
+        layer = {}
+        pkt.show()
+        if(pkt.haslayer(http.HTTPRequest)):
+            layer = pkt.getlayer(http.HTTPRequest).fields
+        elif(pkt.haslayer(http.HTTPResponse)):
+            layer = pkt.getlayer(http.HTTPResponse).fields
+        if('Headers' in layer.keys()):
+            s = layer['Headers'].decode()
+            s.split('\r\n')
+            data += "\tHeaders:\n"
+            for tmp in s:
+                data += "\t\t%s\n" % tmp
+        for key in layer.keys():
+            if(key == 'Headers'):
+                continue
+            else:
+                data += "\t%s: %s\n" % (key, layer[key].decode())
     return data
 
 

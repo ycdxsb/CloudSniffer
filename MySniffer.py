@@ -6,6 +6,7 @@ from PyQt5.QtGui import *
 from qtpy.QtWebEngineWidgets import *
 from pcap import *
 from scapy.all import *
+#import scapy_http.http as http
 import dpkt
 import sys
 import os
