@@ -388,7 +388,6 @@ class MainWindow(QMainWindow):
     def beginBtnHandle(self):
         logger.info("Begin sniff on interface %s" % self.eth)
         self.stop_flag = False
-        self.packageInfos = []
         th = threading.Thread(target=self.capture_packages)
         th.start()
 
