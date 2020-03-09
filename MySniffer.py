@@ -1,5 +1,5 @@
 from statistics import *
-from pcap_decode import PcapDecode
+from pcap_decode import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
@@ -237,7 +237,8 @@ class MainWindow(QMainWindow):
         self.packageDetailWin = QTextEdit()
         self.packageDetailWin.setFixedHeight(250)
         self.packageDetailWin.setFixedWidth(345)
-        self.packageDetailWin.setStyleSheet("border-right:5px solid #323232;border-top:2px solid #323232")
+        self.packageDetailWin.setStyleSheet(
+            "border-right:5px solid #323232;border-top:2px solid #323232")
         self.packageDetailWin.setReadOnly(True)
         self.packageDetailWin.setFont(QFont("Source Code Pro", 14))
 
@@ -300,7 +301,7 @@ class MainWindow(QMainWindow):
             pkts.append(self.packageInfos[i]['pkt'])
         host_ip = get_host_ip(pkts)
         print(host_ip)
-        print(data_in_out_ip(pkts,host_ip))
+        print(data_in_out_ip(pkts, host_ip))
         datas = proto_flow_bytes(pkts)
         data = []
         for k, v in datas.items():
@@ -342,11 +343,18 @@ class MainWindow(QMainWindow):
         self.hexdumpWindow.setText(
             hexdump(self.packageInfos[row]['pkt'], dump=True))
 
+        # detail show
+        data = ""
+        packageInfo = self.packageInfos[row]
+        data += "Frame %d:\n\tlength: %d bytes\n\tinterface: %s\n" % (row+1,packageInfo['info']['len'],packageInfo['eth'])
+        data += pkt_detail(packageInfo['pkt'])
+        self.packageDetailWin.setText(data)
+
     def loadBtnHandle(self):
         logger.info("Load package begin")
         file, ok = QFileDialog.getOpenFileName(self)
         if(file == ''):
-            logger.warning("Lpad file name is None")
+            logger.warning("Load file name is None")
             return
         self.clearBtnHandle()
         pkts = rdpcap(file)
@@ -373,6 +381,7 @@ class MainWindow(QMainWindow):
         for i in range(count-1, -1, -1):
             self.packageInfosTable.removeRow(i)
         self.hexdumpWindow.clear()
+        self.packageDetailWin.clear()
         logger.info("Clean packages done")
 
     def quitBtnHandle(self):
@@ -402,7 +411,7 @@ class MainWindow(QMainWindow):
 
     def deal_package(self, pkt):
         info = self.pcapdecoder.ether_decode(pkt)
-        self.packageInfos.append({'pkt': pkt, 'info': info})
+        self.packageInfos.append({'pkt': pkt, 'info': info, 'eth': self.eth})
         self.showOnTable(info)
 
     def showOnTable(self, info):
