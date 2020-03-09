@@ -1,2 +1,3 @@
 /venv
-sniffer.code-workspace
+/sniffer.code-workspace
+/__pycache__
