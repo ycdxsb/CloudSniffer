@@ -86,18 +86,7 @@ def pkt_detail(pkt):
                 data += "\trdata: %s\n" % dns.an[i].rdata
     if(pkt.haslayer(http.HTTP)):
         data += "HyperText Transfer Protocol:\n"
-        '''
-        if(pkt.haslayer(Raw)):
-            raw = pkt.getlayer(Raw)
-            s = raw.load
-            crlfcrlf = b"\x0d\x0a\x0d\x0a"
-            crlfcrlfIndex = s.find(crlfcrlf)
-            headers = s[:crlfcrlfIndex + len(crlfcrlf)].decode("utf-8")
-            print([headers])
-        '''
-        pkt.show()
         layer = {}
-        pkt.show()
         if(pkt.haslayer(http.HTTPRequest)):
             layer = pkt.getlayer(http.HTTPRequest).fields
         elif(pkt.haslayer(http.HTTPResponse)):
