@@ -4,7 +4,7 @@ from pyecharts import options as opts
 from pyecharts.charts import Pie
 
 
-def pie_rosetype(data, graphname) -> Pie:
+def pie_rosetype(data, graphname, types) -> Pie:
     pie = (
         Pie()
         .add(
@@ -12,13 +12,36 @@ def pie_rosetype(data, graphname) -> Pie:
             data,
             radius=["20%", "60%"],
             center=["50%", "50%"],
-            rosetype="radius",
+            # rosetype="radius",
             label_opts=opts.LabelOpts(is_show=False),
         )
         .set_global_opts(title_opts=opts.TitleOpts(title=graphname))
+        .set_series_opts(label_opts=opts.LabelOpts(formatter="{b}: {c} %s" % types))
     )
     pie.js_host = "./js/"
     return pie
+
+
+def unique_proto_statistic_frame(packageInfos):
+    d = {}
+    for package in packageInfos:
+        info = package['info']
+        if(info['Protocol'] in d.keys()):
+            d[info['Protocol']] += 1
+        else:
+            d[info['Protocol']] = 1
+    return d
+
+
+def unique_proto_statistic_bytes(packageInfos):
+    d = {}
+    for package in packageInfos:
+        info = package['info']
+        if(info['Protocol'] in d.keys()):
+            d[info['Protocol']] += len(corrupt_bytes(package['pkt']))
+        else:
+            d[info['Protocol']] = len(corrupt_bytes(package['pkt']))
+    return d
 
 
 def proto_flow_bytes(PCAPS):

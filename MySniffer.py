@@ -320,11 +320,12 @@ class MainWindow(QMainWindow):
         #host_ip = get_host_ip(pkts)
         # print(host_ip)
         #print(data_in_out_ip(pkts, host_ip))
-        datas = proto_flow_bytes(pkts)
+        #datas = proto_flow_bytes(pkts)
+        datas = unique_proto_statistic_bytes(self.packageInfos)
         data = []
         for k, v in datas.items():
             data.append([k, v])
-        pie = pie_rosetype(data, "")
+        pie = pie_rosetype(data, "","bytes")
         pie.render("./htmls/render.html")
         view = QWebEngineView()
         view.load(QUrl("file:///%s/htmls/render.html" % (os.getcwd())))
@@ -340,11 +341,12 @@ class MainWindow(QMainWindow):
         pkts = []
         for i in range(len(self.packageInfos)):
             pkts.append(self.packageInfos[i]['pkt'])
-        datas = proto_flow_frames(pkts)
+        #datas = proto_flow_frames(pkts)
+        datas = unique_proto_statistic_frame(self.packageInfos)
         data = []
         for k, v in datas.items():
             data.append([k, v])
-        pie = pie_rosetype(data, "")
+        pie = pie_rosetype(data, "","frames")
         pie.render("./htmls/render.html")
         view = QWebEngineView()
         view.load(QUrl("file:///%s/htmls/render.html" % (os.getcwd())))
@@ -452,7 +454,7 @@ class MainWindow(QMainWindow):
         tmp.setFont(font)
         self.packageInfosTable.setItem(
             count, 3, tmp)
-        tmp = QTableWidgetItem(info['Procotol'])
+        tmp = QTableWidgetItem(info['Protocol'])
         tmp.setFont(font)
         self.packageInfosTable.setItem(
             count, 4, tmp)

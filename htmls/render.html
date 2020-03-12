@@ -7,11 +7,11 @@
 
 </head>
 <body>
-    <div id="c0af845665d641f0956c7a81d0cfbb47" class="chart-container" style="width:900px; height:500px;"></div>
+    <div id="8a2a8e97f0694d4da667316c5f5992c6" class="chart-container" style="width:900px; height:500px;"></div>
     <script>
-        var chart_c0af845665d641f0956c7a81d0cfbb47 = echarts.init(
-            document.getElementById('c0af845665d641f0956c7a81d0cfbb47'), 'white', {renderer: 'canvas'});
-        var option_c0af845665d641f0956c7a81d0cfbb47 = {
+        var chart_8a2a8e97f0694d4da667316c5f5992c6 = echarts.init(
+            document.getElementById('8a2a8e97f0694d4da667316c5f5992c6'), 'white', {renderer: 'canvas'});
+        var option_8a2a8e97f0694d4da667316c5f5992c6 = {
     "animation": true,
     "animationThreshold": 2000,
     "animationDuration": 1000,
@@ -52,44 +52,24 @@
             "clockwise": true,
             "data": [
                 {
-                    "name": "IP",
-                    "value": 49
-                },
-                {
-                    "name": "IPv6",
-                    "value": 6
-                },
-                {
-                    "name": "TCP",
-                    "value": 53
-                },
-                {
-                    "name": "UDP",
-                    "value": 2
-                },
-                {
-                    "name": "ARP",
-                    "value": 0
-                },
-                {
-                    "name": "ICMP",
-                    "value": 0
+                    "name": "HTTPS",
+                    "value": 80682
                 },
                 {
                     "name": "DNS",
-                    "value": 2
+                    "value": 44366
+                },
+                {
+                    "name": "ICMP",
+                    "value": 347
                 },
                 {
                     "name": "HTTP",
-                    "value": 0
+                    "value": 2618278
                 },
                 {
-                    "name": "HTTPS",
-                    "value": 51
-                },
-                {
-                    "name": "Others",
-                    "value": 2
+                    "name": "NTP",
+                    "value": 360
                 }
             ],
             "radius": [
@@ -100,27 +80,28 @@
                 "50%",
                 "50%"
             ],
-            "roseType": "radius",
             "label": {
-                "show": false,
+                "show": true,
                 "position": "top",
-                "margin": 8
+                "margin": 8,
+                "formatter": "{b}: {c} bytes"
+            },
+            "rippleEffect": {
+                "show": true,
+                "brushType": "stroke",
+                "scale": 2.5,
+                "period": 4
             }
         }
     ],
     "legend": [
         {
             "data": [
-                "IP",
-                "IPv6",
-                "TCP",
-                "UDP",
-                "ARP",
-                "ICMP",
-                "DNS",
-                "HTTP",
                 "HTTPS",
-                "Others"
+                "DNS",
+                "ICMP",
+                "HTTP",
+                "NTP"
             ],
             "selected": {},
             "show": true,
@@ -149,7 +130,7 @@
         }
     ]
 };
-        chart_c0af845665d641f0956c7a81d0cfbb47.setOption(option_c0af845665d641f0956c7a81d0cfbb47);
+        chart_8a2a8e97f0694d4da667316c5f5992c6.setOption(option_8a2a8e97f0694d4da667316c5f5992c6);
     </script>
 </body>
 </html>

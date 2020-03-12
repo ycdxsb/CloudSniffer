@@ -159,7 +159,7 @@ class PcapDecode:
                 p.time).strftime("%H:%M:%S.%f")
             data['Source'] = 'Unknow'
             data['Destination'] = 'Unknow'
-            data['Procotol'] = 'Unknow'
+            data['Protocol'] = 'Unknow'
             data['len'] = len(corrupt_bytes(p))
             data['info'] = p.summary()
             return data
@@ -181,7 +181,7 @@ class PcapDecode:
                         p.time).strftime("%H:%M:%S.%f")
                     data['Source'] = ip.src
                     data['Destination'] = ip.dst
-                    data['Procotol'] = self.IP_DICT[ip.proto]
+                    data['Protocol'] = self.IP_DICT[ip.proto]
                     data['len'] = len(corrupt_bytes(p))
                     data['info'] = p.summary()
                     return data
@@ -190,7 +190,7 @@ class PcapDecode:
                         p.time).strftime("%H:%M:%S.%f")
                     data['Source'] = ip.src
                     data['Destination'] = ip.dst
-                    data['Procotol'] = 'IPv4'
+                    data['Protocol'] = 'IPv4'
                     data['len'] = len(corrupt_bytes(p))
                     data['info'] = p.summary()
                     return data
@@ -208,7 +208,7 @@ class PcapDecode:
                         p.time).strftime("%H:%M:%S.%f")
                     data['Source'] = ipv6.src
                     data['Destination'] = ipv6.dst
-                    data['Procotol'] = self.IP_DICT[ipv6.nh]
+                    data['Protocol'] = self.IP_DICT[ipv6.nh]
                     data['len'] = len(corrupt_bytes(p))
                     data['info'] = p.summary()
                     return data
@@ -217,7 +217,7 @@ class PcapDecode:
                         p.time).strftime("%H:%M:%S.%f")
                     data['Source'] = ipv6.src
                     data['Destination'] = ipv6.dst
-                    data['Procotol'] = 'IPv6'
+                    data['Protocol'] = 'IPv6'
                     data['len'] = len(corrupt_bytes(p))
                     data['info'] = p.summary()
                     return data
@@ -227,7 +227,7 @@ class PcapDecode:
                     p.time).strftime("%H:%M:%S.%f")
                 data['Source'] = p.src
                 data['Destination'] = p.dst
-                data['Procotol'] = self.ETHER_DICT[p.type]
+                data['Protocol'] = self.ETHER_DICT[p.type]
                 data['len'] = len(corrupt_bytes(p))
                 data['info'] = p.summary()
                 return data
@@ -236,7 +236,7 @@ class PcapDecode:
                     p.time).strftime("%H:%M:%S.%f")
                 data['Source'] = p.src
                 data['Destination'] = p.dst
-                data['Procotol'] = hex(p.type)
+                data['Protocol'] = hex(p.type)
                 data['len'] = len(corrupt_bytes(p))
                 data['info'] = p.summary()
                 return data
@@ -252,15 +252,15 @@ class PcapDecode:
         data['len'] = len(corrupt_bytes(p))
         data['info'] = p.summary()
         if tcp.dport in self.PORT_DICT:
-            data['Procotol'] = self.PORT_DICT[tcp.dport]
+            data['Protocol'] = self.PORT_DICT[tcp.dport]
         elif tcp.sport in self.PORT_DICT:
-            data['Procotol'] = self.PORT_DICT[tcp.sport]
+            data['Protocol'] = self.PORT_DICT[tcp.sport]
         elif tcp.dport in self.TCP_DICT:
-            data['Procotol'] = self.TCP_DICT[tcp.dport]
+            data['Protocol'] = self.TCP_DICT[tcp.dport]
         elif tcp.sport in self.TCP_DICT:
-            data['Procotol'] = self.TCP_DICT[tcp.sport]
+            data['Protocol'] = self.TCP_DICT[tcp.sport]
         else:
-            data['Procotol'] = "TCP"
+            data['Protocol'] = "TCP"
         return data
 
     # 解析UDP层协议
@@ -274,15 +274,15 @@ class PcapDecode:
         data['len'] = len(corrupt_bytes(p))
         data['info'] = p.summary()
         if udp.dport in self.PORT_DICT:
-            data['Procotol'] = self.PORT_DICT[udp.dport]
+            data['Protocol'] = self.PORT_DICT[udp.dport]
         elif udp.sport in self.PORT_DICT:
-            data['Procotol'] = self.PORT_DICT[udp.sport]
+            data['Protocol'] = self.PORT_DICT[udp.sport]
         elif udp.dport in self.UDP_DICT:
-            data['Procotol'] = self.UDP_DICT[udp.dport]
+            data['Protocol'] = self.UDP_DICT[udp.dport]
         elif udp.sport in self.UDP_DICT:
-            data['Procotol'] = self.UDP_DICT[udp.sport]
+            data['Protocol'] = self.UDP_DICT[udp.sport]
         else:
-            data['Procotol'] = "UDP"
+            data['Protocol'] = "UDP"
         return data
 
 
