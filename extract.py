@@ -2,6 +2,7 @@ from scapy.all import *
 from collections import OrderedDict
 
 def web_data(PCAPS, host_ip):
+    host_ip = '192.168.1.105'
     ip_port_id_list = list()
     id = 0
     for pcap in PCAPS:

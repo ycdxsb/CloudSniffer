@@ -10,6 +10,7 @@ from scapy.all import *
 import dpkt
 import sys
 import os
+import re
 import time
 import datetime
 import threading
@@ -113,9 +114,17 @@ class MainWindow(QMainWindow):
         self.protocolLabel.setFixedWidth(60)
         self.protocolLabel.setAlignment(Qt.AlignCenter)
 
+        '''
         self.protocolLineEdit = QLineEdit()
         self.protocolLineEdit.setFixedHeight(32)
         self.protocolLineEdit.setFixedWidth(80)
+        '''
+        self.protocolComboBox = QComboBox()
+        self.protocolComboBox.setFixedHeight(32)
+        self.protocolComboBox.setFixedWidth(100)
+        tmp = ['all', 'arp only', 'tcp only',
+               'udp only', 'tcp or udp', 'ip only']
+        self.protocolComboBox.addItems(tmp)
 
         self.srcIpLabel = QLabel()
         self.srcIpLabel.setText("源地址: ")
@@ -165,7 +174,7 @@ class MainWindow(QMainWindow):
         self.HLayoutMiddle.addWidget(
             self.protocolLabel, 0, Qt.AlignVCenter | Qt.AlignHCenter)
         self.HLayoutMiddle.addWidget(
-            self.protocolLineEdit, 0, Qt.AlignVCenter | Qt.AlignHCenter)
+            self.protocolComboBox, 0, Qt.AlignVCenter | Qt.AlignHCenter)
         self.HLayoutMiddle.addWidget(
             self.srcIpLabel, 0, Qt.AlignVCenter | Qt.AlignHCenter)
         self.HLayoutMiddle.addWidget(
@@ -278,6 +287,7 @@ class MainWindow(QMainWindow):
         self.packageInfos = []
         self.stop_flag = False  # False: not stop; True: stop
         self.setfilter_flag = False  # False: have't set filter; True: have be setted
+        self.filterString = ""
         self.pcapdecoder = PcapDecode()
 
     def setSignalConnect(self):
@@ -300,9 +310,9 @@ class MainWindow(QMainWindow):
         pkts = []
         for i in range(len(self.packageInfos)):
             pkts.append(self.packageInfos[i]['pkt'])
-        host_ip = get_host_ip(pkts)
-        print(host_ip)
-        print(data_in_out_ip(pkts, host_ip))
+        #host_ip = get_host_ip(pkts)
+        # print(host_ip)
+        #print(data_in_out_ip(pkts, host_ip))
         datas = proto_flow_bytes(pkts)
         data = []
         for k, v in datas.items():
@@ -347,7 +357,8 @@ class MainWindow(QMainWindow):
         # detail show
         data = ""
         packageInfo = self.packageInfos[row]
-        data += "Frame %d:\n\tlength: %d bytes\n\tinterface: %s\n" % (row+1,packageInfo['info']['len'],packageInfo['eth'])
+        data += "Frame %d:\n\tlength: %d bytes\n\tinterface: %s\n" % (
+            row+1, packageInfo['info']['len'], packageInfo['eth'])
         data += pkt_detail(packageInfo['pkt'])
         self.packageDetailWin.setText(data)
 
@@ -404,10 +415,8 @@ class MainWindow(QMainWindow):
     def capture_packages(self):
         logger.info("Capture begin")
         while(not self.stop_flag):
-            if(self.setfilter_flag):
-                pass
-            else:
-                sniff(filter="", prn=self.deal_package, iface=self.eth, count=5)
+            sniff(filter=self.filterString,
+                  prn=self.deal_package, iface=self.eth, count=5)
         logger.info("Capture finish")
 
     def deal_package(self, pkt):
@@ -453,18 +462,48 @@ class MainWindow(QMainWindow):
         self.stop_flag = True
         logger.info("Stop sniff on interface %s" % self.eth)
 
+    def get_ip(ip):
+        ip = ip.replace("\r", "")
+        ip = ip.replace("\t", "")
+        ip = ip.replace("\n", "")
+        ip = ip.replace(" ", "")
+        trueIp = re.search(
+            r'^(([01]{0,1}\d{0,1}\d|2[0-4]\d|25[0-5])\.){3}([01]{0,1}\d{0,1}\d|2[0-4]\d|25[0-5])$', ip)
+        if(trueIp == None):
+            return ""
+        return trueIp.string
+
+    def get_port(port):
+        port = port.replace("\r", "")
+        port = port.replace("\t", "")
+        port = port.replace("\n", "")
+        port = port.replace(" ", "")
+        try:
+            port = int(port)
+            if(port >= 0 and port <= 65535):
+                return port
+        except:
+            return ""
+        return ""
+
     def filterBtnHandle(self):
         self.setfilter_flag = True
-        self.protocol = self.protocolLineEdit.text()
+        self.filterString = ""
+        # 1.filter the data showed on the table
+        # 2.set the para for sniffer
+        d = {'all': None, 'arp only': "arp", 'tcp only': "tcp",
+             'udp only': "udp", 'tcp or udp': 'tcp or udp', 'ip only': "ip"}
+        self.protocol = d[self.protocolComboBox.text()]
         logger.info("Set protocol: %s" % self.protocol)
-        self.srcIp = self.srcIpLineEdit.text()
+        self.srcIp = get_ip(self.srcIpLineEdit.text())
         logger.info("Set srcIp: %s" % self.srcIp)
-        self.srcPort = self.srcPortLineEdit.text()
+        self.srcPort = get_port(self.srcPortLineEdit.text())
         logger.info("Set srcPort: %s" % self.srcPort)
-        self.desIp = self.desIpLineEdit.text()
+        self.desIp = get_ip(self.desIpLineEdit.text())
         logger.info("Set desIp: %s" % self.desIp)
-        self.desPort = self.desPortLineEdit.text()
+        self.desPort = get_port(self.desPortLineEdit.text())
         logger.info("Set desPort: %s" % self.desPort)
+        
 
 
 if __name__ == "__main__":
