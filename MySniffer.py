@@ -29,6 +29,7 @@ class MainWindow(QMainWindow):
         self.setSignalConnect()
 
     def setUpUI(self):
+        font = QFont("Source Code Pro", 14)
         self.title = "Sniffer"
         self.setWindowTitle(self.title)
         self.setFixedSize(1000, 800)
@@ -55,6 +56,7 @@ class MainWindow(QMainWindow):
         self.chooseNICComboBox.setFixedWidth(160)
         devs = findalldevs()
         self.chooseNICComboBox.addItems(devs)
+        self.chooseNICComboBox.setFont(font)
 
         self.beginBtn = QPushButton()
         self.beginBtn.setText("开始抓包")
@@ -125,6 +127,7 @@ class MainWindow(QMainWindow):
         tmp = ['all', 'arp only', 'tcp only',
                'udp only', 'tcp or udp', 'ip only']
         self.protocolComboBox.addItems(tmp)
+        self.protocolComboBox.setFont(font)
 
         self.srcIpLabel = QLabel()
         self.srcIpLabel.setText("源地址: ")
@@ -135,6 +138,7 @@ class MainWindow(QMainWindow):
         self.srcIpLineEdit = QLineEdit()
         self.srcIpLineEdit.setFixedHeight(32)
         self.srcIpLineEdit.setFixedWidth(100)
+        self.srcIpLineEdit.setFont(font)
 
         self.srcPortLabel = QLabel()
         self.srcPortLabel.setText("源端口: ")
@@ -145,6 +149,7 @@ class MainWindow(QMainWindow):
         self.srcPortLineEdit = QLineEdit()
         self.srcPortLineEdit.setFixedHeight(32)
         self.srcPortLineEdit.setFixedWidth(40)
+        self.srcPortLineEdit.setFont(font)
 
         self.desIpLabel = QLabel()
         self.desIpLabel.setText("目的地址: ")
@@ -155,6 +160,7 @@ class MainWindow(QMainWindow):
         self.desIpLineEdit = QLineEdit()
         self.desIpLineEdit.setFixedHeight(32)
         self.desIpLineEdit.setFixedWidth(100)
+        self.desIpLineEdit.setFont(font)
 
         self.desPortLabel = QLabel()
         self.desPortLabel.setText("目的端口: ")
@@ -165,6 +171,7 @@ class MainWindow(QMainWindow):
         self.desPortLineEdit = QLineEdit()
         self.desPortLineEdit.setFixedHeight(32)
         self.desPortLineEdit.setFixedWidth(40)
+        self.desPortLineEdit.setFont(font)
 
         self.filterBtn = QPushButton()
         self.filterBtn.setText("设置过滤")
@@ -462,48 +469,83 @@ class MainWindow(QMainWindow):
         self.stop_flag = True
         logger.info("Stop sniff on interface %s" % self.eth)
 
-    def get_ip(ip):
+    def get_ip(self, ip):
         ip = ip.replace("\r", "")
         ip = ip.replace("\t", "")
         ip = ip.replace("\n", "")
         ip = ip.replace(" ", "")
+        if(ip == ""):
+            return ""
         trueIp = re.search(
             r'^(([01]{0,1}\d{0,1}\d|2[0-4]\d|25[0-5])\.){3}([01]{0,1}\d{0,1}\d|2[0-4]\d|25[0-5])$', ip)
         if(trueIp == None):
-            return ""
+            QMessageBox.warning(self, "警告", "ip格式有误，请重新输入",
+                                QMessageBox.Yes, QMessageBox.Yes)
+            return None
         return trueIp.string
 
-    def get_port(port):
+    def get_port(self, port):
         port = port.replace("\r", "")
         port = port.replace("\t", "")
         port = port.replace("\n", "")
         port = port.replace(" ", "")
+        if(port == ""):
+            return -1
         try:
             port = int(port)
             if(port >= 0 and port <= 65535):
                 return port
         except:
-            return ""
-        return ""
+            QMessageBox.warning(self, "警告", "端口格式有误，请重新输入",
+                                QMessageBox.Yes, QMessageBox.Yes)
+            return None
+        return -1
 
     def filterBtnHandle(self):
-        self.setfilter_flag = True
-        self.filterString = ""
         # 1.filter the data showed on the table
         # 2.set the para for sniffer
-        d = {'all': None, 'arp only': "arp", 'tcp only': "tcp",
-             'udp only': "udp", 'tcp or udp': 'tcp or udp', 'ip only': "ip"}
-        self.protocol = d[self.protocolComboBox.text()]
+        d = {'all': "", 'arp only': "arp", 'tcp only': "tcp",
+             'udp only': "udp", 'tcp or udp': '(tcp or udp)', 'ip only': "ip"}
+        self.protocol = d[self.protocolComboBox.currentText()]
         logger.info("Set protocol: %s" % self.protocol)
-        self.srcIp = get_ip(self.srcIpLineEdit.text())
+        tmp_srcIp = ""
+        tmp_srcPort = -1
+        tmp_desIp = ""
+        tmp_desPort = -1
+        tmp_srcIp = self.get_ip(self.srcIpLineEdit.text())
+        if(tmp_srcIp == None):
+            logger.info("Set srcIp error" % self.srcIp)
+            return
+        tmp_srcPort = self.get_port(self.srcPortLineEdit.text())
+        if(tmp_srcPort == None):
+            logger.info("Set srcPort error" % self.srcIp)
+            return
+        tmp_desIp = self.get_ip(self.desIpLineEdit.text())
+        if(tmp_desIp == None):
+            logger.info("Set desIp error" % self.srcIp)
+            return
+        tmp_desPort = self.get_port(self.desPortLineEdit.text())
+        if(tmp_desPort == None):
+            logger.info("Set desPort error" % self.srcIp)
+            return
+        self.srcIp = tmp_srcIp
+        self.srcPort = tmp_srcPort
+        self.desIp = tmp_desIp
+        self.desPort = tmp_desPort
         logger.info("Set srcIp: %s" % self.srcIp)
-        self.srcPort = get_port(self.srcPortLineEdit.text())
         logger.info("Set srcPort: %s" % self.srcPort)
-        self.desIp = get_ip(self.desIpLineEdit.text())
         logger.info("Set desIp: %s" % self.desIp)
-        self.desPort = get_port(self.desPortLineEdit.text())
         logger.info("Set desPort: %s" % self.desPort)
-        
+        tmp = []
+        tmp.append(self.protocol) if(self.protocol != "") else None
+        tmp.append("src host %s" % self.srcIp) if(self.srcIp != "") else None
+        tmp.append("src port %d" % self.srcPort) if(
+            self.srcPort != -1) else None
+        tmp.append("dst host %s" % self.desIp) if(self.desIp != "") else None
+        tmp.append("dst port %d" % self.desPort) if(
+            self.desPort != -1) else None
+        self.filterString = " and ".join(tmp)
+        logger.info("filter string is: %s" % self.filterString)
 
 
 if __name__ == "__main__":
