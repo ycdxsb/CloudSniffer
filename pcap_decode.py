@@ -73,7 +73,11 @@ def pkt_detail(pkt):
             data += "\topcode: %s\n" % "answer"
         else:
             data += "\topcode: %s\n" % "query"
-        data += "\tqname: %s\n" % dns.qd.qname.decode()
+        try:
+            data += "\tqname: %s\n" % dns.qd.qname.decode()
+        except:
+            data += "\rerror\n"
+            return data
         for i in range(0, dns.ancount):
             data += "\t===========================\n"
             if(type(dns.an[i].rrname) == bytes):
@@ -287,9 +291,9 @@ class PcapDecode:
 
 
 if __name__ == '__main__':
-    PD = PcapDecode()  
+    PD = PcapDecode()
     pcap_test = sniff(filter="", iface="en0", count=10)
-    data_result = dict()  
+    data_result = dict()
     for p in pcap_test:
         data_result = PD.ether_decode(p)
         print(data_result)

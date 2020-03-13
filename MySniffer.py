@@ -1,5 +1,6 @@
 from statistics import *
 from pcap_decode import *
+from extract import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
@@ -328,6 +329,37 @@ class MainWindow(QMainWindow):
         self.flowtimeBtn.clicked.connect(self.flowtimeBtnHandle)
 
         self.packageInfosTable.clicked.connect(self.packageInfosTableHandle)
+        self.packageInfosTable.doubleClicked.connect(self.extractHtmlHandle)
+
+    def extractHtmlHandle(self, index):
+        row = index.row()
+        if(self.packageInfos[row]['info']['Protocol'] != 'HTTP'):
+            return
+        pkt = self.packageInfos[row]['pkt']
+        if(not pkt.haslayer(IP)):
+            return
+        ip = pkt.getlayer(IP).src
+        pkts = []
+        for i in range(len(self.packageInfos)):
+            pkts.append(self.packageInfos[i]['pkt'])
+        if(pkts == []):
+            return
+        host_ip = get_host_ip(pkts)
+        logger.info(logger.info("host_ip: %s", host_ip))
+        d = extract_html(pkts, host_ip)
+        #ip_port_data_list.append({'data_id': data_id, 'ip_port': ip_port,'data': data,  "index_list": load_list})
+        for i in range(0, len(d)):
+            if(d[i]['ip_port'].startswith(ip) and d[i]['ip_port'].split(":")[1] == str(pkt.dport)):
+                view =QTextEdit()
+                view.setText(d[i]['data'])
+                dialog = QDialog(self)
+                dialog.setFixedHeight(600)
+                dialog.setFixedWidth(1000)
+                l = QHBoxLayout()
+                l.addWidget(view)
+                dialog.setLayout(l)
+                dialog.show()
+                # 124.16.77.200:59307:HTTP
 
     def flowtimeBtnHandle(self):
         pkts = []
@@ -343,7 +375,7 @@ class MainWindow(QMainWindow):
         in_x = in_data.keys()
         in_y = [in_data[k] for k in in_data.keys()]
         out_y = [out_data[k] for k in out_data.keys()]
-        line = line_base(in_x,in_y,out_y)
+        line = line_base(in_x, in_y, out_y)
         line.render("./htmls/render.html")
         view = QWebEngineView()
         view.load(QUrl("file:///%s/htmls/render.html" % (os.getcwd())))
@@ -354,7 +386,6 @@ class MainWindow(QMainWindow):
         l.addWidget(view)
         dialog.setLayout(l)
         dialog.show()
-        
 
     def outCountBtnHandle(self):
         pkts = []
@@ -439,7 +470,6 @@ class MainWindow(QMainWindow):
         row = index.row()
         self.hexdumpWindow.setText(
             hexdump(self.packageInfos[row]['pkt'], dump=True))
-
         # detail show
         data = ""
         packageInfo = self.packageInfos[row]

@@ -1,8 +1,8 @@
 from scapy.all import *
 from collections import OrderedDict
 
-def web_data(PCAPS, host_ip):
-    host_ip = '192.168.1.105'
+
+def extract_html(PCAPS, host_ip):
     ip_port_id_list = list()
     id = 0
     for pcap in PCAPS:
@@ -60,4 +60,6 @@ def web_data(PCAPS, host_ip):
             data = tmp_data
         ip_port_data_list.append({'data_id': data_id, 'ip_port': ip_port,
                                   'data': data, 'raw_data': raw_data, "index_list": load_list})
+        ip_port_data_list.append({'data_id': data_id, 'ip_port': ip_port,
+                                  'data': data,  "index_list": load_list})
     return ip_port_data_list
