@@ -214,10 +214,15 @@ class MainWindow(QMainWindow):
         self.protoCountBtn.setFixedHeight(32)
         self.protoCountBtn.setFixedWidth(100)
 
-        self.inoutCountBtn = QPushButton()
-        self.inoutCountBtn.setText("流入流出统计")
-        self.inoutCountBtn.setFixedHeight(32)
-        self.inoutCountBtn.setFixedWidth(100)
+        self.inCountBtn = QPushButton()
+        self.inCountBtn.setText("流入统计")
+        self.inCountBtn.setFixedHeight(32)
+        self.inCountBtn.setFixedWidth(100)
+
+        self.outCountBtn = QPushButton()
+        self.outCountBtn.setText("流出统计")
+        self.outCountBtn.setFixedHeight(32)
+        self.outCountBtn.setFixedWidth(100)
 
         self.statisitcHLayout = QHBoxLayout()
         self.statisticWidget = QWidget()
@@ -226,7 +231,9 @@ class MainWindow(QMainWindow):
         self.statisitcHLayout.addWidget(
             self.protoCountBtn, 0, Qt.AlignVCenter | Qt.AlignHCenter)
         self.statisitcHLayout.addWidget(
-            self.inoutCountBtn, 0, Qt.AlignVCenter | Qt.AlignHCenter)
+            self.inCountBtn, 0, Qt.AlignVCenter | Qt.AlignHCenter)
+        self.statisitcHLayout.addWidget(
+            self.outCountBtn, 0, Qt.AlignVCenter | Qt.AlignHCenter)
         self.statisticWidget.setLayout(self.statisitcHLayout)
         self.statisticWidget.setFixedHeight(40)
 
@@ -309,13 +316,56 @@ class MainWindow(QMainWindow):
         self.filterBtn.clicked.connect(self.filterBtnHandle)
 
         self.protoCountBtn.clicked.connect(self.protoCountBtnHandle)
-        self.inoutCountBtn.clicked.connect(self.inoutCountBtnHandle)
-
+        self.inCountBtn.clicked.connect(self.inCountBtnHandle)
+        self.outCountBtn.clicked.connect(self.outCountBtnHandle)
         self.packageInfosTable.clicked.connect(self.packageInfosTableHandle)
 
-    def inoutCountBtnHandle(self):
-        
-        pass
+    def outCountBtnHandle(self):
+        pkts = []
+        for i in range(len(self.packageInfos)):
+            pkts.append(self.packageInfos[i]['pkt'])
+        host_ip = get_host_ip(pkts)
+        logger.info("host_ip: %s", host_ip)
+        d = data_in_out_ip(pkts, host_ip)
+        data_frames = [[ip, frame]
+                      for ip, frame in zip(d['out_keyp'], d['out_packet'])]
+        data_bytes = [[ip, byte]
+                      for ip, byte in zip(d['out_keyl'], d['out_len'])]
+        pie = pie_base(data_frames, data_bytes, "流出流量统计")
+        pie.render("./htmls/render.html")
+        view = QWebEngineView()
+        view.load(QUrl("file:///%s/htmls/render.html" % (os.getcwd())))
+        dialog = QDialog(self)
+        dialog.setFixedHeight(600)
+        dialog.setFixedWidth(1000)
+        l = QHBoxLayout()
+        l.addWidget(view)
+        dialog.setLayout(l)
+        dialog.show()
+
+
+    def inCountBtnHandle(self):
+        pkts = []
+        for i in range(len(self.packageInfos)):
+            pkts.append(self.packageInfos[i]['pkt'])
+        host_ip = get_host_ip(pkts)
+        logger.info("host_ip: %s", host_ip)
+        d = data_in_out_ip(pkts, host_ip)
+        data_frames = [[ip, frame]
+                      for ip, frame in zip(d['in_keyp'], d['in_packet'])]
+        data_bytes = [[ip, byte]
+                      for ip, byte in zip(d['in_keyl'], d['in_len'])]
+        pie = pie_base(data_frames, data_bytes, "流入流量统计")
+        pie.render("./htmls/render.html")
+        view = QWebEngineView()
+        view.load(QUrl("file:///%s/htmls/render.html" % (os.getcwd())))
+        dialog = QDialog(self)
+        dialog.setFixedHeight(600)
+        dialog.setFixedWidth(1000)
+        l = QHBoxLayout()
+        l.addWidget(view)
+        dialog.setLayout(l)
+        dialog.show()
 
     def protoCountBtnHandle(self):
         datas = unique_proto_statistic_frame(self.packageInfos)
@@ -326,7 +376,7 @@ class MainWindow(QMainWindow):
         data_bytes = []
         for k, v in datas.items():
             data_bytes.append([k, v])
-        pie = pie_proto(data_frames, data_bytes, "")
+        pie = pie_base(data_frames, data_bytes, "协议统计")
         pie.render("./htmls/render.html")
         view = QWebEngineView()
         view.load(QUrl("file:///%s/htmls/render.html" % (os.getcwd())))

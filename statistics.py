@@ -4,24 +4,24 @@ from pyecharts import options as opts
 from pyecharts.charts import Pie
 
 
-def pie_proto(data_frame, data_bytes, graphname) -> Pie:
+def pie_base(data_frame, data_bytes, graphname) -> Pie:
     pie = (
         Pie()
         .add(
             "",
             data_frame,
-            radius=["20%", "60%"],
+            radius=["15%", "50%"],
             center=["25%", "50%"],
             label_opts=opts.LabelOpts(formatter="{b}: {c} frames"),
         )
         .add(
             "",
             data_bytes,
-            radius=["20%", "60%"],
+            radius=["15%", "50%"],
             center=["75%", "50%"],
             label_opts=opts.LabelOpts(formatter="{b}: {c} bytes"),
         )
-        .set_global_opts(title_opts=opts.TitleOpts(title="协议统计图", pos_bottom=True))
+        .set_global_opts(title_opts=opts.TitleOpts(title=graphname, pos_bottom=True))
     )
     pie.js_host = "./js/"
     return pie
@@ -255,6 +255,6 @@ def data_in_out_ip(PCAPS, host_ip):
     for key, value in out_len_dict:
         out_keyl_list.append(key)
         out_len_list.append(value)
-    in_ip_dict = {'in_keyp': in_keyp_list, 'in_packet': in_packet_list, 'in_keyl': in_keyl_list, 'in_len': in_len_list,
+    d = {'in_keyp': in_keyp_list, 'in_packet': in_packet_list, 'in_keyl': in_keyl_list, 'in_len': in_len_list,
                   'out_keyp': out_keyp_list, 'out_packet': out_packet_list, 'out_keyl': out_keyl_list, 'out_len': out_len_list}
-    return in_ip_dict
+    return d

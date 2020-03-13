@@ -287,9 +287,9 @@ class PcapDecode:
 
 
 if __name__ == '__main__':
-    PD = PcapDecode()  # 实例化该类为PD
+    PD = PcapDecode()  
     pcap_test = sniff(filter="", iface="en0", count=10)
-    data_result = dict()  # 将解析结果存入dict
+    data_result = dict()  
     for p in pcap_test:
         data_result = PD.ether_decode(p)
         print(data_result)
