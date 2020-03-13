@@ -314,6 +314,7 @@ class MainWindow(QMainWindow):
         self.packageInfosTable.clicked.connect(self.packageInfosTableHandle)
 
     def inoutCountBtnHandle(self):
+        
         pass
 
     def protoCountBtnHandle(self):
@@ -325,13 +326,13 @@ class MainWindow(QMainWindow):
         data_bytes = []
         for k, v in datas.items():
             data_bytes.append([k, v])
-        pie = pie_base(data_frames, data_bytes, "")
+        pie = pie_proto(data_frames, data_bytes, "")
         pie.render("./htmls/render.html")
         view = QWebEngineView()
         view.load(QUrl("file:///%s/htmls/render.html" % (os.getcwd())))
         dialog = QDialog(self)
         dialog.setFixedHeight(600)
-        dialog.setFixedWidth(900)
+        dialog.setFixedWidth(1000)
         l = QHBoxLayout()
         l.addWidget(view)
         dialog.setLayout(l)

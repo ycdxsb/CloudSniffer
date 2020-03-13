@@ -4,7 +4,7 @@ from pyecharts import options as opts
 from pyecharts.charts import Pie
 
 
-def pie_base(data_frame, data_bytes, graphname) -> Pie:
+def pie_proto(data_frame, data_bytes, graphname) -> Pie:
     pie = (
         Pie()
         .add(
@@ -21,6 +21,7 @@ def pie_base(data_frame, data_bytes, graphname) -> Pie:
             center=["75%", "50%"],
             label_opts=opts.LabelOpts(formatter="{b}: {c} bytes"),
         )
+        .set_global_opts(title_opts=opts.TitleOpts(title="协议统计图", pos_bottom=True))
     )
     pie.js_host = "./js/"
     return pie
@@ -161,6 +162,38 @@ def get_host_ip(PCAPS):
             ip_list.append(pcap.getlayer(IP).dst)
     host_ip = collections.Counter(ip_list).most_common(1)[0][0]
     return host_ip
+
+
+def get_public_ip():
+    from urllib.request import urlopen
+    from json import load
+    ip = None
+    # four methods to get my public ip 
+    try:
+        ip = urlopen('http://ip.42.pl/raw', timeout=3).read()
+        return ip
+    except:
+        ip = None
+
+    try:
+        ip = load(urlopen('http://jsonip.com', timeout=3))['ip']
+        return ip
+    except:
+        ip = None
+
+    try:
+        ip = load(urlopen('http://httpbin.org/ip', timeout=3))['origin']
+        return ip
+    except:
+        ip = None
+
+    try:
+        ip = load(
+            urlopen('https://api.ipify.org/?format=json', timeout=3))['ip']
+        return ip
+    except:
+        ip = None
+    return ip
 
 
 def data_in_out_ip(PCAPS, host_ip):

@@ -7,11 +7,11 @@
 
 </head>
 <body>
-    <div id="33c7e132a572456ea8c37a35d8876e59" class="chart-container" style="width:900px; height:500px;"></div>
+    <div id="7862ff77a9ff4aa99be656c1ecd0e1f0" class="chart-container" style="width:900px; height:500px;"></div>
     <script>
-        var chart_33c7e132a572456ea8c37a35d8876e59 = echarts.init(
-            document.getElementById('33c7e132a572456ea8c37a35d8876e59'), 'white', {renderer: 'canvas'});
-        var option_33c7e132a572456ea8c37a35d8876e59 = {
+        var chart_7862ff77a9ff4aa99be656c1ecd0e1f0 = echarts.init(
+            document.getElementById('7862ff77a9ff4aa99be656c1ecd0e1f0'), 'white', {renderer: 'canvas'});
+        var option_7862ff77a9ff4aa99be656c1ecd0e1f0 = {
     "animation": true,
     "animationThreshold": 2000,
     "animationDuration": 1000,
@@ -52,24 +52,20 @@
             "clockwise": true,
             "data": [
                 {
-                    "name": "ARP",
-                    "value": 6
-                },
-                {
-                    "name": "HTTPS",
-                    "value": 64
-                },
-                {
-                    "name": "DNS",
-                    "value": 4
-                },
-                {
-                    "name": "HTTP",
-                    "value": 4
+                    "name": "TCP",
+                    "value": 2
                 },
                 {
                     "name": "UDP",
                     "value": 1
+                },
+                {
+                    "name": "ARP",
+                    "value": 2
+                },
+                {
+                    "name": "HTTPS",
+                    "value": 27
                 }
             ],
             "radius": [
@@ -92,24 +88,20 @@
             "clockwise": true,
             "data": [
                 {
-                    "name": "ARP",
-                    "value": 252
-                },
-                {
-                    "name": "HTTPS",
-                    "value": 17305
-                },
-                {
-                    "name": "DNS",
-                    "value": 482
-                },
-                {
-                    "name": "HTTP",
-                    "value": 304
+                    "name": "TCP",
+                    "value": 270
                 },
                 {
                     "name": "UDP",
                     "value": 47
+                },
+                {
+                    "name": "ARP",
+                    "value": 84
+                },
+                {
+                    "name": "HTTPS",
+                    "value": 7680
                 }
             ],
             "radius": [
@@ -131,13 +123,17 @@
     "legend": [
         {
             "data": [
+                "TCP",
+                "UDP",
                 "ARP",
-                "HTTPS",
-                "DNS",
-                "HTTP",
-                "UDP"
+                "HTTPS"
             ],
-            "selected": {}
+            "selected": {},
+            "show": true,
+            "padding": 5,
+            "itemGap": 10,
+            "itemWidth": 25,
+            "itemHeight": 14
         }
     ],
     "tooltip": {
@@ -151,9 +147,17 @@
             "fontSize": 14
         },
         "borderWidth": 0
-    }
+    },
+    "title": [
+        {
+            "text": "\u534f\u8bae\u7edf\u8ba1\u56fe",
+            "bottom": true,
+            "padding": 5,
+            "itemGap": 10
+        }
+    ]
 };
-        chart_33c7e132a572456ea8c37a35d8876e59.setOption(option_33c7e132a572456ea8c37a35d8876e59);
+        chart_7862ff77a9ff4aa99be656c1ecd0e1f0.setOption(option_7862ff77a9ff4aa99be656c1ecd0e1f0);
     </script>
 </body>
 </html>
