@@ -324,11 +324,15 @@ class MainWindow(QMainWindow):
         pkts = []
         for i in range(len(self.packageInfos)):
             pkts.append(self.packageInfos[i]['pkt'])
+        if(pkts == []):
+            QMessageBox.warning(self, "警告", "当前无pcap包",
+                                QMessageBox.Yes, QMessageBox.Yes)
+            return
         host_ip = get_host_ip(pkts)
         logger.info("host_ip: %s", host_ip)
         d = data_in_out_ip(pkts, host_ip)
         data_frames = [[ip, frame]
-                      for ip, frame in zip(d['out_keyp'], d['out_packet'])]
+                       for ip, frame in zip(d['out_keyp'], d['out_packet'])]
         data_bytes = [[ip, byte]
                       for ip, byte in zip(d['out_keyl'], d['out_len'])]
         pie = pie_base(data_frames, data_bytes, "流出流量统计")
@@ -343,16 +347,19 @@ class MainWindow(QMainWindow):
         dialog.setLayout(l)
         dialog.show()
 
-
     def inCountBtnHandle(self):
         pkts = []
         for i in range(len(self.packageInfos)):
             pkts.append(self.packageInfos[i]['pkt'])
+        if(pkts == []):
+            QMessageBox.warning(self, "警告", "当前无pcap包",
+                                QMessageBox.Yes, QMessageBox.Yes)
+            return
         host_ip = get_host_ip(pkts)
         logger.info("host_ip: %s", host_ip)
         d = data_in_out_ip(pkts, host_ip)
         data_frames = [[ip, frame]
-                      for ip, frame in zip(d['in_keyp'], d['in_packet'])]
+                       for ip, frame in zip(d['in_keyp'], d['in_packet'])]
         data_bytes = [[ip, byte]
                       for ip, byte in zip(d['in_keyl'], d['in_len'])]
         pie = pie_base(data_frames, data_bytes, "流入流量统计")
@@ -368,6 +375,10 @@ class MainWindow(QMainWindow):
         dialog.show()
 
     def protoCountBtnHandle(self):
+        if(self.packageInfos == []):
+            QMessageBox.warning(self, "警告", "当前无pcap包",
+                                QMessageBox.Yes, QMessageBox.Yes)
+            return
         datas = unique_proto_statistic_frame(self.packageInfos)
         data_frames = []
         for k, v in datas.items():
