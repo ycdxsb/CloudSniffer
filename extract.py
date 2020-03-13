@@ -58,8 +58,8 @@ def extract_html(PCAPS, host_ip):
             data = raw_data.decode('GBK', 'ignore')
         else:
             data = tmp_data
-        ip_port_data_list.append({'data_id': data_id, 'ip_port': ip_port,
-                                  'data': data, 'raw_data': raw_data, "index_list": load_list})
+        #ip_port_data_list.append({'data_id': data_id, 'ip_port': ip_port,
+        #                          'data': data, 'raw_data': raw_data, "index_list": load_list})
         ip_port_data_list.append({'data_id': data_id, 'ip_port': ip_port,
                                   'data': data,  "index_list": load_list})
     return ip_port_data_list

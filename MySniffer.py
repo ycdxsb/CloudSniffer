@@ -350,8 +350,11 @@ class MainWindow(QMainWindow):
         #ip_port_data_list.append({'data_id': data_id, 'ip_port': ip_port,'data': data,  "index_list": load_list})
         for i in range(0, len(d)):
             if(d[i]['ip_port'].startswith(ip) and d[i]['ip_port'].split(":")[1] == str(pkt.dport)):
-                view =QTextEdit()
-                view.setText(d[i]['data'])
+                with open("./htmls/render.html", "w") as f:
+                    f.write(d[i]['data'])
+                QMessageBox.information(self,"提醒","网页存储在htmls/render.html",QMessageBox.Yes,QMessageBox.Yes)
+                view = QPlainTextEdit()
+                view.setPlainText(d[i]['data'].strip())
                 dialog = QDialog(self)
                 dialog.setFixedHeight(600)
                 dialog.setFixedWidth(1000)
