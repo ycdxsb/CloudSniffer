@@ -215,14 +215,19 @@ class MainWindow(QMainWindow):
         self.protoCountBtn.setFixedWidth(100)
 
         self.inCountBtn = QPushButton()
-        self.inCountBtn.setText("流入统计")
+        self.inCountBtn.setText("流入流量统计")
         self.inCountBtn.setFixedHeight(32)
         self.inCountBtn.setFixedWidth(100)
 
         self.outCountBtn = QPushButton()
-        self.outCountBtn.setText("流出统计")
+        self.outCountBtn.setText("流出流量统计")
         self.outCountBtn.setFixedHeight(32)
         self.outCountBtn.setFixedWidth(100)
+
+        self.flowtimeBtn = QPushButton()
+        self.flowtimeBtn.setText("流量时间统计")
+        self.flowtimeBtn.setFixedHeight(32)
+        self.flowtimeBtn.setFixedWidth(100)
 
         self.statisitcHLayout = QHBoxLayout()
         self.statisticWidget = QWidget()
@@ -234,6 +239,8 @@ class MainWindow(QMainWindow):
             self.inCountBtn, 0, Qt.AlignVCenter | Qt.AlignHCenter)
         self.statisitcHLayout.addWidget(
             self.outCountBtn, 0, Qt.AlignVCenter | Qt.AlignHCenter)
+        self.statisitcHLayout.addWidget(
+            self.flowtimeBtn, 0, Qt.AlignVCenter | Qt.AlignHCenter)
         self.statisticWidget.setLayout(self.statisitcHLayout)
         self.statisticWidget.setFixedHeight(40)
 
@@ -318,7 +325,36 @@ class MainWindow(QMainWindow):
         self.protoCountBtn.clicked.connect(self.protoCountBtnHandle)
         self.inCountBtn.clicked.connect(self.inCountBtnHandle)
         self.outCountBtn.clicked.connect(self.outCountBtnHandle)
+        self.flowtimeBtn.clicked.connect(self.flowtimeBtnHandle)
+
         self.packageInfosTable.clicked.connect(self.packageInfosTableHandle)
+
+    def flowtimeBtnHandle(self):
+        pkts = []
+        for i in range(len(self.packageInfos)):
+            pkts.append(self.packageInfos[i]['pkt'])
+        if(pkts == []):
+            QMessageBox.warning(self, "警告", "当前无pcap包",
+                                QMessageBox.Yes, QMessageBox.Yes)
+            return
+        host_ip = get_host_ip(pkts)
+        logger.info("host_ip: %s", host_ip)
+        in_data, out_data = time_flow(pkts, host_ip)
+        in_x = in_data.keys()
+        in_y = [in_data[k] for k in in_data.keys()]
+        out_y = [out_data[k] for k in out_data.keys()]
+        line = line_base(in_x,in_y,out_y)
+        line.render("./htmls/render.html")
+        view = QWebEngineView()
+        view.load(QUrl("file:///%s/htmls/render.html" % (os.getcwd())))
+        dialog = QDialog(self)
+        dialog.setFixedHeight(600)
+        dialog.setFixedWidth(1000)
+        l = QHBoxLayout()
+        l.addWidget(view)
+        dialog.setLayout(l)
+        dialog.show()
+        
 
     def outCountBtnHandle(self):
         pkts = []

@@ -1,7 +1,34 @@
+import geoip2.database
 from scapy.all import *
 import collections
 from pyecharts import options as opts
 from pyecharts.charts import Pie
+from pyecharts.charts import Geo
+from pyecharts.charts import Line
+from pyecharts.globals import ChartType, SymbolType
+
+
+def line_base(in_x, in_y, out_y):
+    c = (
+        Line()
+        .add_xaxis(in_x)
+        .add_yaxis("流入流量(kb)", in_y, is_smooth=True)
+        .add_yaxis("流出流量(kb)", out_y, is_smooth=True)
+        .set_series_opts(
+            areastyle_opts=opts.AreaStyleOpts(opacity=0.5),
+            label_opts=opts.LabelOpts(is_show=False),
+        )
+        .set_global_opts(
+            title_opts=opts.TitleOpts(title="流量时间统计图"),
+            xaxis_opts=opts.AxisOpts(
+                axistick_opts=opts.AxisTickOpts(is_align_with_label=True),
+                is_scale=False,
+                boundary_gap=False,
+            ),
+        )
+    )
+    c.js_host = "./js/"
+    return c
 
 
 def pie_base(data_frame, data_bytes, graphname) -> Pie:
@@ -25,6 +52,37 @@ def pie_base(data_frame, data_bytes, graphname) -> Pie:
     )
     pie.js_host = "./js/"
     return pie
+
+
+def geo_base(data_count, src_dst, graphname) -> Geo:
+    geo = (
+        Geo()
+        .add_schema(
+            maptype="china",
+            itemstyle_opts=opts.ItemStyleOpts(
+                color="#323232", border_color="#111"),
+        )
+        .add(
+            "",
+            [("广州", "55 bytes"), ("北京", 66), ("杭州", 77), ("重庆", 88)],
+            type_=ChartType.EFFECT_SCATTER,
+            color="white",
+            #label_opts=opts.LabelOpts(formatter="%s:%d bytes")
+        )
+        .add(
+            "geo",
+            [("广州", "上海"), ("广州", "北京"), ("广州", "杭州"), ("广州", "重庆")],
+            type_=ChartType.LINES,
+            effect_opts=opts.EffectOpts(
+                symbol=SymbolType.ARROW, symbol_size=6, color="blue"
+            ),
+            linestyle_opts=opts.LineStyleOpts(curve=0.2),
+        )
+        .set_series_opts(label_opts=opts.LabelOpts(is_show=False))
+        .set_global_opts(title_opts=opts.TitleOpts(title=graphname, pos_bottom=True))
+    )
+    geo.js_host = "./js/"
+    return geo
 
 
 def unique_proto_statistic_frame(packageInfos):
@@ -168,7 +226,7 @@ def get_public_ip():
     from urllib.request import urlopen
     from json import load
     ip = None
-    # four methods to get my public ip 
+    # four methods to get my public ip
     try:
         ip = urlopen('http://ip.42.pl/raw', timeout=3).read()
         return ip
@@ -256,5 +314,91 @@ def data_in_out_ip(PCAPS, host_ip):
         out_keyl_list.append(key)
         out_len_list.append(value)
     d = {'in_keyp': in_keyp_list, 'in_packet': in_packet_list, 'in_keyl': in_keyl_list, 'in_len': in_len_list,
-                  'out_keyp': out_keyp_list, 'out_packet': out_packet_list, 'out_keyl': out_keyl_list, 'out_len': out_len_list}
+         'out_keyp': out_keyp_list, 'out_packet': out_packet_list, 'out_keyl': out_keyl_list, 'out_len': out_len_list}
     return d
+
+
+def time_flow(PCAPS, host_ip):
+    in_time_flow_dict = collections.OrderedDict()
+    out_time_flow_dict = collections.OrderedDict()
+    tmp = [p.time for p in PCAPS]
+    start = min(tmp)
+    end = max(tmp)
+    for i in range(0, int(float("%.1f" % (end-start))*10)+1):
+        in_time_flow_dict[i/10.0] = 0
+        out_time_flow_dict[i/10.0] = 0
+    #timediff = float
+    for pkt in PCAPS:
+        if(not pkt.haslayer(IP)):
+            continue
+        if(pkt.getlayer(IP).dst != host_ip):
+            continue
+        timediff = pkt.time - start
+        if float('%.1f' % timediff) in in_time_flow_dict.keys():
+            in_time_flow_dict[float('%.1f' % timediff)
+                              ] += len(corrupt_bytes(pkt))
+        else:
+            in_time_flow_dict[float('%.1f' % timediff)] = len(
+                corrupt_bytes(pkt))
+    for k in in_time_flow_dict.keys():
+        in_time_flow_dict[k] = float(
+            "%.1f" % (float(in_time_flow_dict[k])/1024.0))
+
+    for pkt in PCAPS:
+        if(not pkt.haslayer(IP)):
+            continue
+        if(pkt.getlayer(IP).src != host_ip):
+            continue
+        timediff = pkt.time - start
+        if float('%.1f' % timediff) in out_time_flow_dict.keys():
+            out_time_flow_dict[float('%.1f' % timediff)
+                               ] += len(corrupt_bytes(pkt))
+        else:
+            out_time_flow_dict[float('%.1f' % timediff)] = len(
+                corrupt_bytes(pkt))
+    for k in out_time_flow_dict.keys():
+        out_time_flow_dict[k] = float(
+            "%.1f" % (float(out_time_flow_dict[k])/1024.0))
+
+    return in_time_flow_dict, out_time_flow_dict
+
+
+def get_geo(reader, ip):
+    try:
+        response = reader.city(ip)
+        city_name = response.country.names['zh-CN'] + \
+            response.city.names['zh-CN']
+        longitude = response.location.longitude
+        latitude = response.location.latitude
+        return [city_name, longitude, latitude]
+    except:
+        return None
+
+
+def get_ipmap(PCAPS, host_ip):
+    reader = geoip2.database.Reader('./GeoIp/GeoLite2-City.mmdb')
+    #geo_dict = dict()
+    ip_value_dict = dict()
+    ip_value_list = list()
+    for pcap in PCAPS:
+        if pcap.haslayer(IP):
+            src = pcap.getlayer(IP).src
+            dst = pcap.getlayer(IP).dst
+            pcap_len = len(corrupt_bytes(pcap))
+            if src == host_ip:
+                oip = dst
+            else:
+                oip = src
+            if oip in ip_value_dict:
+                ip_value_dict[oip] += pcap_len
+            else:
+                ip_value_dict[oip] = pcap_len
+    for ip, value in ip_value_dict.items():
+        geo_list = get_geo(reader, ip)
+        if geo_list:
+            # geo_dict[geo_list[0]] = [geo_list[1], geo_list[2]]
+            Mvalue = [ip, str(value)]
+            ip_value_list.append({geo_list[0]: Mvalue})
+        else:
+            pass
+    return ip_value_list
