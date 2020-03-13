@@ -4,19 +4,23 @@ from pyecharts import options as opts
 from pyecharts.charts import Pie
 
 
-def pie_rosetype(data, graphname, types) -> Pie:
+def pie_base(data_frame, data_bytes, graphname) -> Pie:
     pie = (
         Pie()
         .add(
             "",
-            data,
+            data_frame,
             radius=["20%", "60%"],
-            center=["50%", "50%"],
-            # rosetype="radius",
-            label_opts=opts.LabelOpts(is_show=False),
+            center=["25%", "50%"],
+            label_opts=opts.LabelOpts(formatter="{b}: {c} frames"),
         )
-        .set_global_opts(title_opts=opts.TitleOpts(title=graphname))
-        .set_series_opts(label_opts=opts.LabelOpts(formatter="{b}: {c} %s" % types))
+        .add(
+            "",
+            data_bytes,
+            radius=["20%", "60%"],
+            center=["75%", "50%"],
+            label_opts=opts.LabelOpts(formatter="{b}: {c} bytes"),
+        )
     )
     pie.js_host = "./js/"
     return pie

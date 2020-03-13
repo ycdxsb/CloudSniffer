@@ -209,24 +209,24 @@ class MainWindow(QMainWindow):
         self.statisticLabel.setFixedWidth(100)
         self.statisticLabel.setText("统计功能 :")
 
-        self.framesCountBtn = QPushButton()
-        self.framesCountBtn.setText("帧数统计")
-        self.framesCountBtn.setFixedHeight(32)
-        self.framesCountBtn.setFixedWidth(100)
+        self.protoCountBtn = QPushButton()
+        self.protoCountBtn.setText("协议统计")
+        self.protoCountBtn.setFixedHeight(32)
+        self.protoCountBtn.setFixedWidth(100)
 
-        self.bytesCountBtn = QPushButton()
-        self.bytesCountBtn.setText("字节统计")
-        self.bytesCountBtn.setFixedHeight(32)
-        self.bytesCountBtn.setFixedWidth(100)
+        self.inoutCountBtn = QPushButton()
+        self.inoutCountBtn.setText("流入流出统计")
+        self.inoutCountBtn.setFixedHeight(32)
+        self.inoutCountBtn.setFixedWidth(100)
 
         self.statisitcHLayout = QHBoxLayout()
         self.statisticWidget = QWidget()
         self.statisitcHLayout.addWidget(
             self.statisticLabel, 0, Qt.AlignVCenter | Qt.AlignHCenter)
         self.statisitcHLayout.addWidget(
-            self.framesCountBtn, 0, Qt.AlignVCenter | Qt.AlignHCenter)
+            self.protoCountBtn, 0, Qt.AlignVCenter | Qt.AlignHCenter)
         self.statisitcHLayout.addWidget(
-            self.bytesCountBtn, 0, Qt.AlignVCenter | Qt.AlignHCenter)
+            self.inoutCountBtn, 0, Qt.AlignVCenter | Qt.AlignHCenter)
         self.statisticWidget.setLayout(self.statisitcHLayout)
         self.statisticWidget.setFixedHeight(40)
 
@@ -308,51 +308,30 @@ class MainWindow(QMainWindow):
 
         self.filterBtn.clicked.connect(self.filterBtnHandle)
 
-        self.framesCountBtn.clicked.connect(self.framesCountBtnHandle)
-        self.bytesCountBtn.clicked.connect(self.bytesCountBtnHandle)
+        self.protoCountBtn.clicked.connect(self.protoCountBtnHandle)
+        self.inoutCountBtn.clicked.connect(self.inoutCountBtnHandle)
 
         self.packageInfosTable.clicked.connect(self.packageInfosTableHandle)
 
-    def bytesCountBtnHandle(self):
-        pkts = []
-        for i in range(len(self.packageInfos)):
-            pkts.append(self.packageInfos[i]['pkt'])
-        #host_ip = get_host_ip(pkts)
-        # print(host_ip)
-        #print(data_in_out_ip(pkts, host_ip))
-        #datas = proto_flow_bytes(pkts)
-        datas = unique_proto_statistic_bytes(self.packageInfos)
-        data = []
-        for k, v in datas.items():
-            data.append([k, v])
-        pie = pie_rosetype(data, "","bytes")
-        pie.render("./htmls/render.html")
-        view = QWebEngineView()
-        view.load(QUrl("file:///%s/htmls/render.html" % (os.getcwd())))
-        dialog = QDialog(self)
-        dialog.setFixedHeight(600)
-        dialog.setFixedWidth(800)
-        l = QHBoxLayout()
-        l.addWidget(view)
-        dialog.setLayout(l)
-        dialog.show()
+    def inoutCountBtnHandle(self):
+        pass
 
-    def framesCountBtnHandle(self):
-        pkts = []
-        for i in range(len(self.packageInfos)):
-            pkts.append(self.packageInfos[i]['pkt'])
-        #datas = proto_flow_frames(pkts)
+    def protoCountBtnHandle(self):
         datas = unique_proto_statistic_frame(self.packageInfos)
-        data = []
+        data_frames = []
         for k, v in datas.items():
-            data.append([k, v])
-        pie = pie_rosetype(data, "","frames")
+            data_frames.append([k, v])
+        datas = unique_proto_statistic_bytes(self.packageInfos)
+        data_bytes = []
+        for k, v in datas.items():
+            data_bytes.append([k, v])
+        pie = pie_base(data_frames, data_bytes, "")
         pie.render("./htmls/render.html")
         view = QWebEngineView()
         view.load(QUrl("file:///%s/htmls/render.html" % (os.getcwd())))
         dialog = QDialog(self)
         dialog.setFixedHeight(600)
-        dialog.setFixedWidth(800)
+        dialog.setFixedWidth(900)
         l = QHBoxLayout()
         l.addWidget(view)
         dialog.setLayout(l)
