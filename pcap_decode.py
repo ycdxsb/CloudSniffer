@@ -1,5 +1,4 @@
 from scapy.all import *
-#import scapy_http.http as http
 from scapy.layers import http
 import time
 import datetime
