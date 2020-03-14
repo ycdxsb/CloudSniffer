@@ -16,7 +16,7 @@ import datetime
 import threading
 import logging
 logging.basicConfig(format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s',
-                    level=logging.DEBUG,filename='logs/%s.log'%time.strftime('%Y-%m-%d:%H:%M:%S' , time.localtime()),filemode="w")
+                    level=logging.DEBUG, filename='logs/%s.log' % time.strftime('%Y-%m-%d-%H:%M:%S', time.localtime()), filemode="w")
 logger = logging.getLogger(__name__)
 
 
@@ -116,11 +116,6 @@ class MainWindow(QMainWindow):
         self.protocolLabel.setFixedWidth(60)
         self.protocolLabel.setAlignment(Qt.AlignCenter)
 
-        '''
-        self.protocolLineEdit = QLineEdit()
-        self.protocolLineEdit.setFixedHeight(32)
-        self.protocolLineEdit.setFixedWidth(80)
-        '''
         self.protocolComboBox = QComboBox()
         self.protocolComboBox.setFixedHeight(32)
         self.protocolComboBox.setFixedWidth(100)
@@ -229,6 +224,11 @@ class MainWindow(QMainWindow):
         self.flowtimeBtn.setFixedHeight(32)
         self.flowtimeBtn.setFixedWidth(100)
 
+        self.ipMapBtn = QPushButton()
+        self.ipMapBtn.setText("IP所在地")
+        self.ipMapBtn.setFixedHeight(32)
+        self.ipMapBtn.setFixedWidth(100)
+
         self.statisitcHLayout = QHBoxLayout()
         self.statisticWidget = QWidget()
         self.statisitcHLayout.addWidget(
@@ -241,6 +241,8 @@ class MainWindow(QMainWindow):
             self.outCountBtn, 0, Qt.AlignVCenter | Qt.AlignHCenter)
         self.statisitcHLayout.addWidget(
             self.flowtimeBtn, 0, Qt.AlignVCenter | Qt.AlignHCenter)
+        self.statisitcHLayout.addWidget(
+            self.ipMapBtn, 0, Qt.AlignVCenter | Qt.AlignHCenter)
         self.statisticWidget.setLayout(self.statisitcHLayout)
         self.statisticWidget.setFixedHeight(40)
 
@@ -326,9 +328,50 @@ class MainWindow(QMainWindow):
         self.inCountBtn.clicked.connect(self.inCountBtnHandle)
         self.outCountBtn.clicked.connect(self.outCountBtnHandle)
         self.flowtimeBtn.clicked.connect(self.flowtimeBtnHandle)
+        self.ipMapBtn.clicked.connect(self.ipMapBtnHandle)
 
         self.packageInfosTable.clicked.connect(self.packageInfosTableHandle)
         self.packageInfosTable.doubleClicked.connect(self.extractHtmlHandle)
+
+    def ipMapBtnHandle(self):
+        pkts = []
+        for i in range(len(self.packageInfos)):
+            pkts.append(self.packageInfos[i]['pkt'])
+        if(pkts == []):
+            QMessageBox.warning(self, "警告", "当前无pcap包",
+                                QMessageBox.Yes, QMessageBox.Yes)
+            return
+        host_ip = get_host_ip(pkts)
+        logger.info("host_ip: %s", host_ip)
+        d = get_ipmap(pkts, host_ip)
+        view = QTableWidget()
+        view.verticalHeader().setVisible(False)
+        view.setColumnCount(3)
+        view.setHorizontalHeaderLabels(["IP","地理位置","流量"])
+        view.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        view.setSelectionBehavior(QAbstractItemView.SelectRows)
+        view.setColumnWidth(0,120)
+        view.setColumnWidth(1,120)
+        font = QFont("Source Code Pro", 14)
+        for i in range(len(d)):
+            view.insertRow(i)
+            tmp = QTableWidgetItem(d[i][0])
+            tmp.setFont(font)
+            view.setItem(i,0,tmp)
+            tmp = QTableWidgetItem(d[i][2])
+            tmp.setFont(font)
+            view.setItem(i,1,tmp)
+            tmp = QTableWidgetItem(str(d[i][1])+" bytes")
+            tmp.setFont(font)
+            view.setItem(i,2,tmp)
+        dialog = QDialog(self)
+        dialog.setFixedHeight(500)
+        dialog.setFixedWidth(360)
+        l = QHBoxLayout()
+        l.addWidget(view)
+        dialog.setLayout(l)
+        dialog.show()
+
 
     def extractHtmlHandle(self, index):
         row = index.row()
@@ -367,7 +410,7 @@ class MainWindow(QMainWindow):
                 return
                 # 124.16.77.200:59307:HTTP
         QMessageBox.information(
-                    self, "提醒", "未提取到http内容", QMessageBox.Yes, QMessageBox.Yes)
+            self, "提醒", "未提取到http内容", QMessageBox.Yes, QMessageBox.Yes)
 
     def flowtimeBtnHandle(self):
         pkts = []

@@ -397,8 +397,9 @@ def get_ipmap(PCAPS, host_ip):
         geo_list = get_geo(reader, ip)
         if geo_list:
             # geo_dict[geo_list[0]] = [geo_list[1], geo_list[2]]
-            Mvalue = [ip, str(value)]
-            ip_value_list.append({geo_list[0]: Mvalue})
+            #Mvalue = [ip, str(value)]
+            #ip_value_list.append({geo_list[0]: Mvalue})
+            ip_value_list.append([ip, value, geo_list[0]])
         else:
             pass
     return ip_value_list
