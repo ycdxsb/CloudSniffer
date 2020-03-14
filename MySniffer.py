@@ -352,8 +352,11 @@ class MainWindow(QMainWindow):
             if(d[i]['ip_port'].startswith(ip) and d[i]['ip_port'].split(":")[1] == str(pkt.dport)):
                 with open("./htmls/render.html", "w") as f:
                     f.write(d[i]['data'])
-                QMessageBox.information(self,"提醒","网页存储在htmls/render.html",QMessageBox.Yes,QMessageBox.Yes)
+                QMessageBox.information(
+                    self, "提醒", "网页存储在htmls/render.html", QMessageBox.Yes, QMessageBox.Yes)
                 view = QPlainTextEdit()
+                font = QFont("Source Code Pro", 14)
+                view.setFont(font)
                 view.setPlainText(d[i]['data'].strip())
                 dialog = QDialog(self)
                 dialog.setFixedHeight(600)
@@ -362,7 +365,10 @@ class MainWindow(QMainWindow):
                 l.addWidget(view)
                 dialog.setLayout(l)
                 dialog.show()
+                return
                 # 124.16.77.200:59307:HTTP
+        QMessageBox.information(
+                    self, "提醒", "未提取到http内容", QMessageBox.Yes, QMessageBox.Yes)
 
     def flowtimeBtnHandle(self):
         pkts = []
