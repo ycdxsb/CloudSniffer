@@ -7,7 +7,6 @@ from PyQt5.QtGui import *
 from qtpy.QtWebEngineWidgets import *
 from pcap import *
 from scapy.all import *
-#import scapy_http.http as http
 import dpkt
 import sys
 import os
@@ -16,8 +15,8 @@ import time
 import datetime
 import threading
 import logging
-logging.basicConfig(level=logging.DEBUG,
-                    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s',
+                    level=logging.DEBUG,filename='logs/%s.log'%time.strftime('%Y-%m-%d:%H:%M:%S' , time.localtime()),filemode="w")
 logger = logging.getLogger(__name__)
 
 

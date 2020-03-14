@@ -105,7 +105,10 @@ def pkt_detail(pkt):
             if(key == 'Headers'):
                 continue
             else:
-                data += "\t%s: %s\n" % (key, layer[key].decode())
+                try:
+                    data += "\t%s: %s\n" % (key, layer[key].decode())
+                except:
+                    continue
     return data
 
 
