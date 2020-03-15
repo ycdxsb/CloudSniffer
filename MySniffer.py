@@ -270,15 +270,18 @@ class MainWindow(QMainWindow):
         self.packageDetailWin = QTextEdit()
         self.packageDetailWin.setFixedHeight(250)
         self.packageDetailWin.setFixedWidth(345)
+        #self.packageDetailWin.setStyleSheet(
+        #    "border-right:5px solid #323232;border-top:2px solid #323232")
         self.packageDetailWin.setStyleSheet(
-            "border-right:5px solid #323232;border-top:2px solid #323232")
+            "border-right:5px solid #ECECEC;border-top:2px solid #ECECEC")
         self.packageDetailWin.setReadOnly(True)
         self.packageDetailWin.setFont(QFont("Source Code Pro", 14))
 
         self.hexdumpWindow = QTextEdit()
         self.hexdumpWindow.setFixedHeight(250)
         self.hexdumpWindow.setFixedWidth(650)
-        self.hexdumpWindow.setStyleSheet("border-top:2px solid #323232")
+        #self.hexdumpWindow.setStyleSheet("border-top:2px solid #323232")
+        self.hexdumpWindow.setStyleSheet("border-top:2px solid #ECECEC")
         self.hexdumpWindow.setReadOnly(True)
         self.hexdumpWindow.setFont(QFont("Source Code Pro", 14))
         # set HLayoutBottom to HLayoutBottom
@@ -710,7 +713,7 @@ class MainWindow(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    app.setWindowIcon(QIcon("./images/swords.ico"))
+    app.setWindowIcon(QIcon("./images/cloud.ico"))
     # app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
     mainWindow = MainWindow()
     mainWindow.show()
