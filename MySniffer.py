@@ -270,7 +270,7 @@ class MainWindow(QMainWindow):
         self.packageDetailWin = QTextEdit()
         self.packageDetailWin.setFixedHeight(250)
         self.packageDetailWin.setFixedWidth(345)
-        #self.packageDetailWin.setStyleSheet(
+        # self.packageDetailWin.setStyleSheet(
         #    "border-right:5px solid #323232;border-top:2px solid #323232")
         self.packageDetailWin.setStyleSheet(
             "border-right:5px solid #ECECEC;border-top:2px solid #ECECEC")
@@ -280,7 +280,7 @@ class MainWindow(QMainWindow):
         self.hexdumpWindow = QTextEdit()
         self.hexdumpWindow.setFixedHeight(250)
         self.hexdumpWindow.setFixedWidth(650)
-        #self.hexdumpWindow.setStyleSheet("border-top:2px solid #323232")
+        # self.hexdumpWindow.setStyleSheet("border-top:2px solid #323232")
         self.hexdumpWindow.setStyleSheet("border-top:2px solid #ECECEC")
         self.hexdumpWindow.setReadOnly(True)
         self.hexdumpWindow.setFont(QFont("Source Code Pro", 14))
@@ -350,31 +350,31 @@ class MainWindow(QMainWindow):
         view = QTableWidget()
         view.verticalHeader().setVisible(False)
         view.setColumnCount(3)
-        view.setHorizontalHeaderLabels(["IP","地理位置","流量"])
+        view.setHorizontalHeaderLabels(["IP", "地理位置", "流量"])
         view.setEditTriggers(QAbstractItemView.NoEditTriggers)
         view.setSelectionBehavior(QAbstractItemView.SelectRows)
-        view.setColumnWidth(0,120)
-        view.setColumnWidth(1,120)
+        view.setColumnWidth(0, 160)
+        view.setColumnWidth(1, 120)
+        view.setColumnWidth(1, 180)
         font = QFont("Source Code Pro", 14)
         for i in range(len(d)):
             view.insertRow(i)
             tmp = QTableWidgetItem(d[i][0])
             tmp.setFont(font)
-            view.setItem(i,0,tmp)
+            view.setItem(i, 0, tmp)
             tmp = QTableWidgetItem(d[i][2])
             tmp.setFont(font)
-            view.setItem(i,1,tmp)
+            view.setItem(i, 1, tmp)
             tmp = QTableWidgetItem(str(d[i][1])+" bytes")
             tmp.setFont(font)
-            view.setItem(i,2,tmp)
+            view.setItem(i, 2, tmp)
         dialog = QDialog(self)
-        dialog.setFixedHeight(500)
-        dialog.setFixedWidth(360)
+        dialog.setFixedHeight(600)
+        dialog.setFixedWidth(480)
         l = QHBoxLayout()
         l.addWidget(view)
         dialog.setLayout(l)
         dialog.show()
-
 
     def extractHtmlHandle(self, index):
         row = index.row()
@@ -709,6 +709,75 @@ class MainWindow(QMainWindow):
             self.desPort != -1) else None
         self.filterString = " and ".join(tmp)
         logger.info("filter string is: %s" % self.filterString)
+
+        # filter the packets have shown on the table
+        pkts = []
+        for i in range(len(self.packageInfos)):
+            pkts.append(self.packageInfos[i]['pkt'])
+        # d = {'all': "", 'arp only': "arp", 'tcp only': "tcp",
+        #     'udp only': "udp", 'tcp or udp': '(tcp or udp)', 'ip only': "ip"}
+        indexs = [i for i in range(len(pkts))]
+        tmp = []
+        if(self.protocol == ""):
+            tmp = indexs
+        elif(self.protocol == 'arp'):
+            for i in indexs:
+                if("ARP" in pkts[i].summary()):
+                    tmp.append(i)
+        elif(self.protocol == 'tcp'):
+            for i in indexs:
+                if(pkts[i].haslayer(TCP)):
+                    tmp.append(i)
+        elif(self.protocol == 'udp'):
+            for i in indexs:
+                if(pkts[i].haslayer(UDP)):
+                    tmp.append(i)
+        elif(self.protocol == '(tcp or udp)'):
+            for i in indexs:
+                if(pkts[i].haslayer(UDP) or pkts[i].haslayer(TCP)):
+                    tmp.append(i)
+        elif(self.protocol == 'ip'):
+            for i in indexs:
+                if(pkts[i].haslayer(IP)):
+                    tmp.append(i)
+
+        indexs = tmp
+        tmp = []
+        if(self.srcIp != ""):
+            for i in indexs:
+                if(pkts[i].haslayer(IP) and pkts[i].src == self.srcIp):
+                    tmp.append(i)
+        else:
+            tmp = indexs
+
+        indexs = tmp
+        tmp = []
+        if(self.srcPort != -1):
+            for i in indexs:
+                if(pkts[i].sport == self.srcPort):
+                    tmp.append(i)
+        else:
+            tmp = indexs
+
+        indexs = tmp
+        tmp = []
+        if(self.desIp != ""):
+            for i in indexs:
+                if(pkts[i].haslayer(IP) and pkts[i].dst == self.srcIp):
+                    tmp.append(i)
+        else:
+            tmp = indexs
+
+        indexs = tmp
+        tmp = []
+        if(self.desPort != -1):
+            for i in indexs:
+                if(pkts[i].dport == self.desPort):
+                    tmp.append(i)
+        else:
+            tmp = indexs
+        indexs = tmp
+        print(indexs)
 
 
 if __name__ == "__main__":
