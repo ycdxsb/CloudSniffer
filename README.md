@@ -2,8 +2,6 @@
 
 一款基于Scapy和PyQt5的网络嗅探工具
 
-
-
 #### 功能
 
 **基本功能**：
@@ -34,6 +32,22 @@
 - 嗅探前过滤、嗅探后过滤
 - html内容提取
 - 日志记录
+
+
+
+#### 效果展示
+
+**基本界面**
+
+![basic](https://github.com/ycdxsb/CloudSniffer/blob/master/images/basic.PNG)
+
+**统计功能**
+
+![statistics](https://github.com/ycdxsb/CloudSniffer/blob/master/images/statistic.PNG)
+
+**提取html内容**
+
+![extractHTML](https://github.com/ycdxsb/CloudSniffer/blob/master/images/extractHTML.PNG)
 
 
 
