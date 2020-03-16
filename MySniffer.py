@@ -379,7 +379,7 @@ class MainWindow(QMainWindow):
 
     def extractHtmlHandle(self, index):
         row = index.row()
-        row = self.indexes(row)
+        row = self.indexes[row]
         if(self.packageInfos[row]['info']['Protocol'] != 'HTTP'):
             return
         pkt = self.packageInfos[row]['pkt']
