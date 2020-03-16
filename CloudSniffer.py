@@ -795,7 +795,7 @@ class MainWindow(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    app.setWindowIcon(QIcon("./images/cloud.ico"))
+    app.setWindowIcon(QIcon("./images/icon.ico"))
     mainWindow = MainWindow()
     mainWindow.show()
     sys.exit(app.exec_())
