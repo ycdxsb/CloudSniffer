@@ -43,7 +43,7 @@
 
 **统计功能**
 
-![statistics](https://github.com/ycdxsb/CloudSniffer/blob/master/images/statistic.PNG)
+![statistics](https://github.com/ycdxsb/CloudSniffer/blob/master/images/statistics.PNG)
 
 **提取html内容**
 
