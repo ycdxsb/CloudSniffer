@@ -311,6 +311,7 @@ class MainWindow(QMainWindow):
         self.desIp = None
         self.desPort = None
         self.packageInfos = []
+        self.indexes = []
         self.stop_flag = False  # False: not stop; True: stop
         self.setfilter_flag = False  # False: have't set filter; True: have be setted
         self.filterString = ""
@@ -378,6 +379,7 @@ class MainWindow(QMainWindow):
 
     def extractHtmlHandle(self, index):
         row = index.row()
+        row = self.indexes(row)
         if(self.packageInfos[row]['info']['Protocol'] != 'HTTP'):
             return
         pkt = self.packageInfos[row]['pkt']
@@ -522,13 +524,14 @@ class MainWindow(QMainWindow):
 
     def packageInfosTableHandle(self, index):
         row = index.row()
+        row = self.indexes[row]
         self.hexdumpWindow.setText(
             hexdump(self.packageInfos[row]['pkt'], dump=True))
         # detail show
         data = ""
         packageInfo = self.packageInfos[row]
         data += "Frame %d:\n\tlength: %d bytes\n\tinterface: %s\n" % (
-            row+1, packageInfo['info']['len'], packageInfo['eth'])
+            index.row()+1, packageInfo['info']['len'], packageInfo['eth'])
         data += pkt_detail(packageInfo['pkt'])
         self.packageDetailWin.setText(data)
 
@@ -559,6 +562,7 @@ class MainWindow(QMainWindow):
     def clearBtnHandle(self):
         logger.info("Clean packages begin")
         self.packageInfos = []
+        self.indexes = []
         count = self.packageInfosTable.rowCount()
         for i in range(count-1, -1, -1):
             self.packageInfosTable.removeRow(i)
@@ -592,6 +596,7 @@ class MainWindow(QMainWindow):
     def deal_package(self, pkt):
         info = self.pcapdecoder.ether_decode(pkt)
         self.packageInfos.append({'pkt': pkt, 'info': info, 'eth': self.eth})
+        self.indexes.append(len(self.packageInfos)-1)
         self.showOnTable(info)
 
     def showOnTable(self, info):
@@ -777,13 +782,20 @@ class MainWindow(QMainWindow):
         else:
             tmp = indexs
         indexs = tmp
-        print(indexs)
+
+        self.indexes = indexs
+        count = self.packageInfosTable.rowCount()
+        for i in range(count-1, -1, -1):
+            self.packageInfosTable.removeRow(i)
+        self.hexdumpWindow.clear()
+        self.packageDetailWin.clear()
+        for i in self.indexes:
+            self.showOnTable(self.packageInfos[i]['info'])
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon("./images/cloud.ico"))
-    # app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
     mainWindow = MainWindow()
     mainWindow.show()
     sys.exit(app.exec_())
