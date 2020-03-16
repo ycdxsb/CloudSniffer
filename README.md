@@ -4,6 +4,8 @@
 
 
 
+#### 功能
+
 **基本功能**：
 
 - 网卡选择
@@ -16,6 +18,8 @@
 - 协议分析
 - hexdump内容
 
+
+
 **统计功能**
 
 - 流量协议统计（帧数、字节数）
@@ -23,7 +27,7 @@
 - 流入流量统计（帧数、字节数）
 - 流出流量统计（帧数、字节数）
 - 流量时间统计（字节数）
-- IP所在地统计
+- IP所在地查询
 
 **其他功能**
 
@@ -32,7 +36,7 @@
 
 
 
-**安装使用**
+#### 安装使用
 
 ```shell
 $ git clone https://github.com/ycdxsb/CloudSniffer.git
@@ -40,6 +44,33 @@ $ cd ./CloudSniffer
 $ pip3 install requirements.txt
 $ python3 CloudSniffer.py
 ```
+
+
+
+#### 依赖库
+
+```
+dpkt==1.9.2
+geoip2==2.9.0
+pyecharts==1.7.0
+PyQt5==5.14.1
+PyQt5-sip==12.7.1
+PyQtWebEngine==5.14.0
+scapy==2.4.3
+scapy-http==1.8.2
+pypcap==1.2.3
+```
+
+
+
+#### 参考
+
+- [scapy-http](https://github.com/invernizzi/scapy-http)
+- [Pcap-Analyser](https://github.com/HatBoy/Pcap-Analyzer)
+
+
+
+
 
 
 
