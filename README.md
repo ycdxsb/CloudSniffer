@@ -47,9 +47,13 @@
 
 ![statistics](https://github.com/ycdxsb/CloudSniffer/blob/master/images/statistics.PNG)
 
+![statistics.gif](https://github.com/ycdxsb/CloudSniffer/blob/master/images/statistics.gif)
+
 **提取html内容**
 
 ![extractHTML](https://github.com/ycdxsb/CloudSniffer/blob/master/images/extractHTML.PNG)
+
+![extractHTML.gif](https://github.com/ycdxsb/CloudSniffer/blob/master/images/extractHTML.gif)
 
 
 
