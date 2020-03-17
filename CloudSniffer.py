@@ -750,11 +750,10 @@ class MainWindow(QMainWindow):
         tmp = []
         if(self.srcIp != ""):
             for i in indexs:
-                if(pkts[i].haslayer(IP) and pkts[i].src == self.srcIp):
+                if(pkts[i].haslayer(IP) and pkts[i].getlayer(IP).src == self.srcIp):
                     tmp.append(i)
         else:
             tmp = indexs
-
         indexs = tmp
         tmp = []
         if(self.srcPort != -1):
@@ -768,7 +767,7 @@ class MainWindow(QMainWindow):
         tmp = []
         if(self.desIp != ""):
             for i in indexs:
-                if(pkts[i].haslayer(IP) and pkts[i].dst == self.srcIp):
+                if(pkts[i].haslayer(IP) and pkts[i].getlayer(IP).dst == self.srcIp):
                     tmp.append(i)
         else:
             tmp = indexs
