@@ -41,6 +41,8 @@
 
 ![basic](https://github.com/ycdxsb/CloudSniffer/blob/master/images/basic.PNG)
 
+![basic.gif](https://github.com/ycdxsb/CloudSniffer/blob/master/images/basic.gif)
+
 **统计功能**
 
 ![statistics](https://github.com/ycdxsb/CloudSniffer/blob/master/images/statistics.PNG)
