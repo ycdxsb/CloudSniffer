@@ -39,19 +39,19 @@
 
 **基本界面**
 
-![basic](https://github.com/ycdxsb/CloudSniffer/blob/master/images/basic.PNG)
+![basic](https://github.com/ycdxsb/CloudSniffer/blob/master/images/basic.png)
 
 ![basic.gif](https://github.com/ycdxsb/CloudSniffer/blob/master/images/basic.gif)
 
 **统计功能**
 
-![statistics](https://github.com/ycdxsb/CloudSniffer/blob/master/images/statistics.PNG)
+![statistics](https://github.com/ycdxsb/CloudSniffer/blob/master/images/statistics.png)
 
 ![statistics.gif](https://github.com/ycdxsb/CloudSniffer/blob/master/images/statistics.gif)
 
 **提取html内容**
 
-![extractHTML](https://github.com/ycdxsb/CloudSniffer/blob/master/images/extractHTML.PNG)
+![extractHTML](https://github.com/ycdxsb/CloudSniffer/blob/master/images/extractHTML.png)
 
 ![extractHTML.gif](https://github.com/ycdxsb/CloudSniffer/blob/master/images/extractHTML.gif)
 
