@@ -1,0 +1,4 @@
+2020-03-18 21:57:33,889 - CloudSniffer.py[line:32] - INFO: Sniffer is starting
+2020-03-18 21:57:33,972 - CloudSniffer.py[line:310] - INFO: Set interface en0
+2020-03-18 21:57:36,602 - CloudSniffer.py[line:644] - INFO: Stop sniff on interface en0
+2020-03-18 21:57:36,602 - CloudSniffer.py[line:582] - INFO: Sniffer is shutting down

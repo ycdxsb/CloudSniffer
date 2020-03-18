@@ -15,6 +15,12 @@ import time
 import datetime
 import threading
 import logging
+if(not os.path.exists("logs")):
+    os.mkdir("logs")
+else:
+    import shutil
+    shutil.rmtree("logs")
+    os.mkdir("logs")
 logging.basicConfig(format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s',
                     level=logging.DEBUG, filename='logs/%s.log' % time.strftime('%Y-%m-%d-%H:%M:%S', time.localtime()), filemode="w")
 logger = logging.getLogger(__name__)
@@ -793,8 +799,6 @@ class MainWindow(QMainWindow):
 
 
 if __name__ == "__main__":
-    if(not os.path.exists("logs")):
-        os.mkdir("logs")
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon("./images/icon.ico"))
     mainWindow = MainWindow()
