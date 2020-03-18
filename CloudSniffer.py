@@ -15,14 +15,8 @@ import time
 import datetime
 import threading
 import logging
-if(not os.path.exists("logs")):
-    os.mkdir("logs")
-else:
-    import shutil
-    shutil.rmtree("logs")
-    os.mkdir("logs")
 logging.basicConfig(format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s',
-                    level=logging.DEBUG, filename='logs/%s.log' % time.strftime('%Y-%m-%d-%H:%M:%S', time.localtime()), filemode="w")
+                    level=logging.DEBUG, filename="log", filemode="w")
 logger = logging.getLogger(__name__)
 
 
