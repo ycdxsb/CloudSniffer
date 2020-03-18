@@ -793,6 +793,8 @@ class MainWindow(QMainWindow):
 
 
 if __name__ == "__main__":
+    if(os.path.exists("logs")):
+        os.mkdir("logs")
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon("./images/icon.ico"))
     mainWindow = MainWindow()
